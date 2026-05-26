@@ -54,6 +54,7 @@ jwt:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.flywaydb: INFO
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:DEBUG}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_ORG_HIBERNATE_BINDER:TRACE}
+    org.flywaydb: ${LOGGING_LEVEL_ORG_FLYWAY:INFO}
