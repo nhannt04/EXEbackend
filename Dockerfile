@@ -15,7 +15,7 @@ RUN mvn clean package -DskipTests
 
 # ============================================
 # Runtime stage - sử dụng Eclipse Temurin 17 (lightweight)
-FROM eclipse-temurin:17-jre-slim
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
