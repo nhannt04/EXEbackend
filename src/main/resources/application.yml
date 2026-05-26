@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    # URL kết nối JDBC - Sử dụng environment variables cho security
+    url: ${DATABASE_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    # Tối ưu hóa Connection Pool cho Serverless DB (Neon)
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 2
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+      
+  jpa:
+    hibernate:
+      # Dùng 'validate' để cấu trúc database hoàn toàn được kiểm soát bởi Flyway migrations
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    # Cho phép tự động sửa đổi bảng qua các script SQL trong resources/db/migration
+    locations: classpath:db/migration
+
+# Tích hợp cấu hình Cloudflare R2 & JWT - Sử dụng environment variables
+cloudflare:
+  r2:
+    account-id: ${CLOUDFLARE_R2_ACCOUNT_ID}
+    access-key: ${CLOUDFLARE_R2_ACCESS_KEY}
+    secret-key: ${CLOUDFLARE_R2_SECRET_KEY}
+    bucket-name: ${CLOUDFLARE_R2_BUCKET_NAME:travel}
+    endpoint: ${CLOUDFLARE_R2_ENDPOINT}
+    custom-domain: ${CLOUDFLARE_R2_CUSTOM_DOMAIN:}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 900000 # 15 phút (ms)
+  refresh-expiration: 604800000 # 7 ngày (ms)
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.flywaydb: INFO
