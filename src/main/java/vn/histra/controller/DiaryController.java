@@ -8,16 +8,17 @@ import vn.histra.dto.ApiResponse;
 import vn.histra.dto.CommentResponse;
 import vn.histra.dto.DiaryResponse;
 import vn.histra.service.DiaryService;
+import vn.histra.security.JwtTokenProvider;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/diaries")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class DiaryController {
 
     private final DiaryService diaryService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<DiaryResponse>>> getAllDiaries(
@@ -50,10 +51,39 @@ public class DiaryController {
         }
     }
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<ApiResponse<Void>> likeDiary(@PathVariable Long id) {
+    @PostMapping
+    public ResponseEntity<ApiResponse<DiaryResponse>> createDiaryJson(
+            @RequestBody vn.histra.dto.DiaryRequest request) {
         try {
-            diaryService.toggleLike(id);
+            DiaryResponse response = diaryService.createDiaryJson(request);
+            return ResponseEntity.ok(ApiResponse.success(response, "Đăng tải bài viết nhật ký du ký thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Đăng tải bài viết thất bại: " + e.getMessage(), "CREATE_DIARY_FAILED")
+            );
+        }
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<ApiResponse<Void>> likeDiary(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để thực hiện hành động này!", "UNAUTHORIZED")
+                );
+            }
+
+            diaryService.toggleLike(id, userId);
             return ResponseEntity.ok(ApiResponse.success(null, "Thả tim bài viết thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(

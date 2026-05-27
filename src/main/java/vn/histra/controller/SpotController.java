@@ -12,7 +12,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/spots")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class SpotController {
 
     private final SpotService spotService;
@@ -27,6 +26,39 @@ public class SpotController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                 ApiResponse.error("Lấy danh sách địa điểm thất bại: " + e.getMessage(), "GET_SPOTS_FAILED")
+            );
+        }
+    }
+
+    /**
+     * Lấy N địa điểm nổi bật ngẫu nhiên cho trang chủ (mặc định 8 spots)
+     */
+    @GetMapping("/featured")
+    public ResponseEntity<ApiResponse<List<Spot>>> getFeaturedSpots(
+            @RequestParam(defaultValue = "8") int limit) {
+        try {
+            List<Spot> spots = spotService.getFeaturedSpots(limit);
+            return ResponseEntity.ok(ApiResponse.success(spots, "Lấy địa điểm nổi bật thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Lấy địa điểm nổi bật thất bại: " + e.getMessage(), "GET_FEATURED_FAILED")
+            );
+        }
+    }
+
+    /**
+     * Lấy top spots theo danh mục cụ thể cho section phân loại trang chủ
+     */
+    @GetMapping("/category/{category}")
+    public ResponseEntity<ApiResponse<List<Spot>>> getTopByCategory(
+            @PathVariable String category,
+            @RequestParam(defaultValue = "4") int limit) {
+        try {
+            List<Spot> spots = spotService.getTopByCategory(category, limit);
+            return ResponseEntity.ok(ApiResponse.success(spots, "Lấy địa điểm theo danh mục thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Lấy địa điểm theo danh mục thất bại: " + e.getMessage(), "GET_CATEGORY_FAILED")
             );
         }
     }

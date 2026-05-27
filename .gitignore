@@ -1,0 +1,25 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Build output
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+
+# Secret / key material
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
+# Default ignored files
+/shelf/
+/workspace.xml

@@ -19,6 +19,7 @@ public class DiaryResponse {
     private String contentEn;
     private String imageUrl;
     private String imageCfId;
+    private java.util.List<vn.histra.model.DiaryImage> images;
     private Integer likesCount;
     private LocalDateTime createdAt;
     private Spot spot;
