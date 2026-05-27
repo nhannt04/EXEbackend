@@ -35,11 +35,9 @@ public class Diary {
     @Column(name = "content_en", nullable = false, columnDefinition = "TEXT")
     private String contentEn;
 
-    @Column(name = "image_cf_id")
-    private String imageCfId; // Cloudflare Image ID để quản lý/xóa
-
-    @Column(name = "image_url")
-    private String imageUrl; // Link phân phối công khai từ Cloudflare
+    @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<DiaryImage> images = new java.util.ArrayList<>();
 
     @Column(name = "likes_count")
     @Builder.Default

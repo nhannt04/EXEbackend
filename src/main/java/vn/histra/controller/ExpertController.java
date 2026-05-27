@@ -14,7 +14,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/experts")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ExpertController {
 
     private final ExpertService expertService;

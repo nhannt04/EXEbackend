@@ -59,11 +59,9 @@ public class Spot {
     @Column(name = "time_of_day", nullable = false)
     private String timeOfDay;
 
-    @Column(name = "image_cf_id")
-    private String imageCfId;
-
-    @Column(name = "image_url")
-    private String imageUrl;
+    @OneToMany(mappedBy = "spot", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<SpotImage> images = new java.util.ArrayList<>();
 
     @Column(name = "description_vi", columnDefinition = "TEXT")
     private String descriptionVi;

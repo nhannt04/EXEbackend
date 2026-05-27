@@ -1,6 +1,7 @@
 package vn.histra.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import vn.histra.dto.SpotWithDistance;
 import vn.histra.model.Spot;
@@ -21,6 +22,20 @@ public class SpotService {
      */
     public List<Spot> searchSpots(String category, String keyword) {
         return spotRepository.searchSpots(category, keyword);
+    }
+
+    /**
+     * Lấy danh sách địa điểm nổi bật ngẫu nhiên cho trang chủ
+     */
+    public List<Spot> getFeaturedSpots(int limit) {
+        return spotRepository.findFeaturedSpots(PageRequest.of(0, limit));
+    }
+
+    /**
+     * Lấy top spots theo danh mục cụ thể cho các section phân loại
+     */
+    public List<Spot> getTopByCategory(String category, int limit) {
+        return spotRepository.findTopByCategory(category, PageRequest.of(0, limit));
     }
 
     /**
@@ -90,6 +105,9 @@ public class SpotService {
         }
         if (spot.getEstimatedDurationMinutes() == null) {
             spot.setEstimatedDurationMinutes(60);
+        }
+        if (spot.getImages() != null) {
+            spot.getImages().forEach(img -> img.setSpot(spot));
         }
         return spotRepository.save(spot);
     }

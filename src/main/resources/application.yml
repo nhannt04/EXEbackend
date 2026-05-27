@@ -24,10 +24,10 @@ spring:
     hibernate:
       # Dùng 'validate' để cấu trúc database hoàn toàn được kiểm soát bởi Flyway migrations
       ddl-auto: validate
-    show-sql: true
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate:
-        format_sql: true
+        format_sql: ${SPRING_JPA_FORMAT_SQL:false}
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           lob:
@@ -54,9 +54,16 @@ jwt:
   expiration: 900000 # 15 phút (ms)
   refresh-expiration: 604800000 # 7 ngày (ms)
 
+# Groq AI - Trip Planner
+groq:
+  api-key: ${GROQ_API_KEY:}
+  model: ${GROQ_MODEL:llama-3.3-70b-versatile}
+  api-url: https://api.groq.com/openai/v1/chat/completions
+  timeout-seconds: 30
+
 logging:
   level:
     root: ${LOGGING_LEVEL_ROOT:INFO}
-    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:DEBUG}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_ORG_HIBERNATE_BINDER:TRACE}
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:INFO}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${LOGGING_LEVEL_ORG_HIBERNATE_BINDER:INFO}
     org.flywaydb: ${LOGGING_LEVEL_ORG_FLYWAY:INFO}

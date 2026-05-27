@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import vn.histra.dto.CommentResponse;
+import vn.histra.dto.DiaryRequest;
 import vn.histra.dto.DiaryResponse;
 import vn.histra.model.Comment;
 import vn.histra.model.Diary;
+import vn.histra.model.DiaryImage;
 import vn.histra.model.Spot;
 import vn.histra.model.User;
 import vn.histra.repository.CommentRepository;
@@ -47,7 +49,7 @@ public class DiaryService {
     }
 
     /**
-     * Tạo bài viết nhật ký du ký mới kèm tệp ảnh upload lên Cloudflare
+     * Tạo bài viết nhật ký du ký mới kèm tệp ảnh upload lên Cloudflare (Fallback cho Multipart)
      */
     @Transactional
     public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, MultipartFile imageFile) {
@@ -77,13 +79,58 @@ public class DiaryService {
                 .category(category)
                 .contentVi(contentVi)
                 .contentEn(contentEn)
-                .imageCfId(imageCfId)
-                .imageUrl(imageUrl)
                 .build();
         
         if (spot != null) {
             diary.setSpot(spot);
         }
+
+        List<DiaryImage> diaryImages = new ArrayList<>();
+        if (imageUrl != null) {
+            diaryImages.add(DiaryImage.builder()
+                    .diary(diary)
+                    .imageCfId(imageCfId)
+                    .imageUrl(imageUrl)
+                    .build());
+        }
+        diary.setImages(diaryImages);
+
+        Diary savedDiary = diaryRepository.save(diary);
+        return convertToDiaryResponse(savedDiary);
+    }
+
+    /**
+     * Tạo bài viết nhật ký du ký mới bằng JSON payload (Presigned URL flow hỗ trợ nhiều ảnh)
+     */
+    @Transactional
+    public DiaryResponse createDiaryJson(DiaryRequest request) {
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
+
+        Spot spot = null;
+        if (request.getSpotId() != null) {
+            spot = spotRepository.findById(request.getSpotId()).orElse(null);
+        }
+
+        Diary diary = Diary.builder()
+                .user(user)
+                .category(request.getCategory())
+                .contentVi(request.getContentVi())
+                .contentEn(request.getContentEn())
+                .spot(spot)
+                .build();
+
+        List<DiaryImage> diaryImages = new ArrayList<>();
+        if (request.getImages() != null) {
+            for (DiaryRequest.ImageDto imgDto : request.getImages()) {
+                diaryImages.add(DiaryImage.builder()
+                        .diary(diary)
+                        .imageCfId(imgDto.getImageCfId())
+                        .imageUrl(imgDto.getImageUrl())
+                        .build());
+            }
+        }
+        diary.setImages(diaryImages);
 
         Diary savedDiary = diaryRepository.save(diary);
         return convertToDiaryResponse(savedDiary);
@@ -93,9 +140,13 @@ public class DiaryService {
      * Tăng số lượng Thả tim cho bài viết (Like)
      */
     @Transactional
-    public void toggleLike(Long diaryId) {
+    public void toggleLike(Long diaryId, Long userId) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại!"));
+        
+        if (diary.getUser() != null && diary.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không được phép tự thích bài viết của chính mình!");
+        }
         
         diary.setLikesCount(diary.getLikesCount() + 1);
         diaryRepository.save(diary);
@@ -162,13 +213,24 @@ public class DiaryService {
                         .build())
                 .collect(Collectors.toList());
 
+        // Lấy thông tin legacy single image từ ảnh đầu tiên (nếu có) để tương thích ngược với Frontend cũ
+        String legacyImageUrl = null;
+        String legacyImageCfId = null;
+        if (diary.getImages() != null && !diary.getImages().isEmpty()) {
+            legacyImageUrl = diary.getImages().get(0).getImageUrl();
+            legacyImageCfId = diary.getImages().get(0).getImageCfId();
+        } else {
+            legacyImageUrl = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80";
+        }
+
         return DiaryResponse.builder()
                 .id(diary.getId())
                 .category(diary.getCategory())
                 .contentVi(diary.getContentVi())
                 .contentEn(diary.getContentEn())
-                .imageCfId(diary.getImageCfId())
-                .imageUrl(diary.getImageUrl())
+                .imageCfId(legacyImageCfId)
+                .imageUrl(legacyImageUrl)
+                .images(diary.getImages())
                 .likesCount(diary.getLikesCount())
                 .createdAt(diary.getCreatedAt())
                 .spot(diary.getSpot())

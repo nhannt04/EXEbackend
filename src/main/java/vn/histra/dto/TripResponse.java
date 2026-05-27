@@ -16,6 +16,9 @@ public class TripResponse {
     private Integer activityCost;
     private Integer hotelEstimate;
     private Integer transportEstimate;
+    @Builder.Default
+    private Boolean aiPowered = false;
+    private String  aiEngine;
     private List<DaySchedule> days;
 
     @Data

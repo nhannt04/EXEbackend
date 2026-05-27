@@ -1,0 +1,1175 @@
+[
+  {
+    "nameVi": "Chùa Cầu Nhật Bản",
+    "nameEn": "Japanese Covered Bridge",
+    "category": "sightseeing",
+    "tags": "Culture, Heritage, History",
+    "latitude": 15.8772,
+    "longitude": 108.3262,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 45,
+    "openingTime": "07:00:00",
+    "closingTime": "21:00:00",
+    "crowdLevel": "high",
+    "rating": 4.8,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Biểu tượng văn hóa kiến trúc cổ kính hơn 400 năm tuổi giao thoa giữa Việt Nam và Nhật Bản.",
+    "descriptionEn": "A 400-year-old architectural masterpiece symbolizing the historic cultural bridge between Vietnam and Japan.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Faifo Coffee Đọc Sách",
+    "nameEn": "Faifo Coffee Rooftop",
+    "category": "cafe",
+    "tags": "Chill, Check-in, Views",
+    "latitude": 15.8778,
+    "longitude": 108.3282,
+    "averageCost": 80000,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "08:00:00",
+    "closingTime": "22:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Quán cafe sân thượng nổi tiếng sở hữu góc nhìn toàn cảnh những mái ngói rêu phong của phố cổ Hội An.",
+    "descriptionEn": "Famous rooftop coffee shop offering a stunning panoramic view over the golden tiled roofs of Hoi An ancient town.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1447078806655-409295609806?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Cơm Gà Bà Buội",
+    "nameEn": "Ba Buoi Chicken Rice",
+    "category": "food",
+    "tags": "Traditional, Local Taste, Specialty",
+    "latitude": 15.8776,
+    "longitude": 108.3312,
+    "averageCost": 60000,
+    "estimatedDurationMinutes": 40,
+    "openingTime": "10:00:00",
+    "closingTime": "20:00:00",
+    "crowdLevel": "high",
+    "rating": 4.7,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Thương hiệu cơm gà gia truyền nức tiếng từ những năm 1950 với hạt cơm dẻo thơm và thịt gà xé da giòn ngọt.",
+    "descriptionEn": "Legendary family-owned chicken rice brand operating since the 1950s, famous for its savory rice and golden chicken.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Rừng Dừa Bảy Mẫu Cẩm Thanh",
+    "nameEn": "Bay Mau Coconut Forest",
+    "category": "sightseeing",
+    "tags": "Adventure, Fun, Nature",
+    "latitude": 15.8893,
+    "longitude": 108.3754,
+    "averageCost": 150000,
+    "estimatedDurationMinutes": 120,
+    "openingTime": "08:00:00",
+    "closingTime": "17:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Trải nghiệm ngồi thuyền thúng bơi lội giữa rừng dừa nước bạt ngàn và xem múa thúng xoay vòng cảm giác mạnh.",
+    "descriptionEn": "Thrilling basket boat ride through the lush nipa palm forest featuring amazing spinning basket performances.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Khách sạn Little Hoi An Boutique",
+    "nameEn": "Little Hoi An Boutique Hotel",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Luxury, Heritage",
+    "latitude": 15.8765,
+    "longitude": 108.3235,
+    "averageCost": 800000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "00:00:00",
+    "closingTime": "23:59:59",
+    "crowdLevel": "low",
+    "rating": 4.9,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "night",
+    "descriptionVi": "Khách sạn boutique sang trọng nằm ven sông Thu Bồn sở hữu bể bơi vô cực và phong cách trang trí đậm chất di sản.",
+    "descriptionEn": "A charming riverside boutique hotel boasting a stunning infinity pool and vintage heritage-inspired interiors.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Little Pie Homestay",
+    "nameEn": "Little Pie Homestay",
+    "category": "stay",
+    "tags": "Healing, Retreat, Cozy",
+    "latitude": 15.8821,
+    "longitude": 108.3371,
+    "averageCost": 450000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.9,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "night",
+    "descriptionVi": "Góc trú ẩn bình yên, có vườn tranh tre truyền thống rất thích hợp để tĩnh dưỡng và phục hồi năng lượng.",
+    "descriptionEn": "A peaceful hideaway with traditional bamboo gardens, perfect for recharging and digital detox.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hội Quán Quảng Đông",
+    "nameEn": "Cantonese Assembly Hall",
+    "category": "sightseeing",
+    "tags": "Culture, History, Architecture",
+    "latitude": 15.8770,
+    "longitude": 108.3258,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 40,
+    "openingTime": "08:00:00",
+    "closingTime": "17:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Công trình kiến trúc Trung Hoa độc đáo được xây dựng bởi các thương nhân Quảng Đông vào năm 1885.",
+    "descriptionEn": "A stunning Chinese landmark built by Cantonese merchants in 1885, featuring intricate stone carvings.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Reaching Out Teahouse",
+    "nameEn": "Reaching Out Teahouse",
+    "category": "cafe",
+    "tags": "Silence, Healing, Specialty",
+    "latitude": 15.8770,
+    "longitude": 108.3275,
+    "averageCost": 85000,
+    "estimatedDurationMinutes": 75,
+    "openingTime": "08:00:00",
+    "closingTime": "20:00:00",
+    "crowdLevel": "low",
+    "rating": 4.9,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Không gian trà đạo tĩnh lặng tuyệt đối được phục vụ bởi các bạn nhân viên khiếm thính, mang lại cảm giác bình yên sâu sắc.",
+    "descriptionEn": "A peaceful sanctuary of tea and silence, operated by hearing-impaired staff. An ultimate healing oasis.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bánh Mì Phượng",
+    "nameEn": "Phuong Bread",
+    "category": "food",
+    "tags": "Street Food, Famous, Budget",
+    "latitude": 15.8774,
+    "longitude": 108.3312,
+    "averageCost": 35000,
+    "estimatedDurationMinutes": 20,
+    "openingTime": "06:30:00",
+    "closingTime": "21:30:00",
+    "crowdLevel": "high",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, lunch, dinner",
+    "descriptionVi": "Tiệm bánh mì nổi tiếng thế giới được đầu bếp Anthony Bourdain ca ngợi hết lời với nước sốt pate béo ngậy.",
+    "descriptionEn": "The world-famous Vietnamese sandwich shop, highly praised by Anthony Bourdain, loaded with rich local ingredients.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "An Villa Hoi An Resort",
+    "nameEn": "An Villa Hoi An Resort",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Luxury, Nature",
+    "latitude": 15.8892,
+    "longitude": 108.3512,
+    "averageCost": 2400000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.8,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Resort khép kín biệt lập sang trọng, có hồ bơi sinh thái mộc mạc và thiết kế hài hòa thiên nhiên.",
+    "descriptionEn": "Secluded eco-luxury retreat featuring a natural swimming pool and elegant wood-carved bungalows.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hội Quán Phúc Kiến",
+    "nameEn": "Phuc Kien Assembly Hall",
+    "category": "sightseeing",
+    "tags": "Culture, Heritage, Detail",
+    "latitude": 15.8775,
+    "longitude": 108.3298,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 45,
+    "openingTime": "07:30:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "high",
+    "rating": 4.7,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Hội quán lớn nhất và lộng lẫy nhất của người Hoa tại Hội An, thờ Thiên Hậu Thánh Mẫu phù hộ ngư dân.",
+    "descriptionEn": "The largest and most ornate assembly hall in Hoi An, dedicated to Mazu, the Goddess of the Sea.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "FeFe Coffee",
+    "nameEn": "FeFe Coffee Cam Chau",
+    "category": "cafe",
+    "tags": "Healing, Rice Fields, Specialty",
+    "latitude": 15.8835,
+    "longitude": 108.3421,
+    "averageCost": 45000,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "07:00:00",
+    "closingTime": "18:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.8,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Xưởng cà phê hạt local tự rang củi mộc mạc ẩn hiện giữa cánh đồng lúa xanh ngát thơ mộng.",
+    "descriptionEn": "A rustic, open-air micro-roastery serving specialty local beans, hidden deep inside scenic paddy fields.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Cao Lầu Thanh Hà",
+    "nameEn": "Thanh Ha Cao Lau",
+    "category": "food",
+    "tags": "Specialty, Local Taste, Cheap",
+    "latitude": 15.8785,
+    "longitude": 108.3221,
+    "averageCost": 40000,
+    "estimatedDurationMinutes": 30,
+    "openingTime": "07:00:00",
+    "closingTime": "19:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, lunch, dinner",
+    "descriptionVi": "Món mì đặc sản dẻo dai làm từ tro củi Cù Lao Chàm, ăn kèm xá xíu đậm đà và tóp mỡ giòn rụm.",
+    "descriptionEn": "Authentic wood-ash lye noodles served with rich pork slices, crunchy crackers, and Tra Que organic herbs.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Vinh Hung Heritage Hotel",
+    "nameEn": "Vinh Hung Heritage Hotel",
+    "category": "stay",
+    "tags": "Heritage, Culture, Historic",
+    "latitude": 15.8775,
+    "longitude": 108.3262,
+    "averageCost": 1200000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.7,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "night",
+    "descriptionVi": "Ngôi nhà cổ di sản có niên đại hơn 100 năm tuổi nằm ngay trung tâm phố cổ, mang đậm phong cách xưa cũ.",
+    "descriptionEn": "A historic merchant house with over 100 years of living heritage, located right in the ancient heart of town.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Nhà Cổ Tấn Ký",
+    "nameEn": "Tan Ky Old House",
+    "category": "sightseeing",
+    "tags": "Heritage, History, Architecture",
+    "latitude": 15.8765,
+    "longitude": 108.3265,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 35,
+    "openingTime": "08:30:00",
+    "closingTime": "17:45:00",
+    "crowdLevel": "high",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Ngôi nhà cổ tiêu biểu nhất Hội An được bảo tồn nguyên vẹn qua 7 thế hệ gia tộc dòng họ Lê.",
+    "descriptionEn": "The most celebrated merchant home in Hoi An, preserved in pristine condition through seven generations.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Sound of Silence Coffee",
+    "nameEn": "Sound of Silence Beach Cafe",
+    "category": "cafe",
+    "tags": "Beach, Relax, Views",
+    "latitude": 15.9015,
+    "longitude": 108.3495,
+    "averageCost": 55000,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "07:00:00",
+    "closingTime": "19:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.7,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Quán cafe sát biển Tân Thành, ẩn mình dưới rặng dừa xanh, ngắm trọn đại dương bao la bình lặng.",
+    "descriptionEn": "A serene coastal garden cafe directly on Tan Thanh Beach, offering panoramic sea views under coconut leaves.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Thanh Binh Riverside Hotel",
+    "nameEn": "Thanh Binh Riverside Hotel",
+    "category": "stay",
+    "tags": "Ẩm thực, Riverside, Modern",
+    "latitude": 15.8768,
+    "longitude": 108.3235,
+    "averageCost": 950000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Khách sạn nằm sát bờ sông Hoài hiền hòa, chỉ cách chợ đêm ẩm thực và cầu Ánh Sáng 3 phút đi bộ.",
+    "descriptionEn": "A scenic riverside hotel located steps away from the colorful Hoi An Night Market and Light Bridge.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bánh Đập Hến Trộn Bà Già",
+    "nameEn": "Ba Gia Clam Salad & Crackers",
+    "category": "food",
+    "tags": "Local Taste, Street Food, Cheap",
+    "latitude": 15.8791,
+    "longitude": 108.3445,
+    "averageCost": 30000,
+    "estimatedDurationMinutes": 30,
+    "openingTime": "09:00:00",
+    "closingTime": "21:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "afternoon, evening",
+    "descriptionVi": "Bánh đập giòn rụm kết hợp hến xào hành tỏi thơm phức chấm mắm nêm đậm đà chuẩn vị Cẩm Nam.",
+    "descriptionEn": "Crispy smashed rice crackers paired with sautéed baby clams and signature savory anchovy sauce.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Roving Chillhouse Đồng Lúa",
+    "nameEn": "Roving Chillhouse Paddy View",
+    "category": "cafe",
+    "tags": "Views, Sunset, Chill",
+    "latitude": 15.8885,
+    "longitude": 108.3562,
+    "averageCost": 75000,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "07:30:00",
+    "closingTime": "21:00:00",
+    "crowdLevel": "high",
+    "rating": 4.6,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "afternoon, evening",
+    "descriptionVi": "Không gian rộng mở đón hoàng hôn cực đẹp ngắm trọn vẹn cánh đồng lúa xanh rì rì rào gió hát.",
+    "descriptionEn": "An open-concept pavilion cafe offering premium sunset views directly over vast green rice paddies.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bánh Bao Bánh Vạc Hoa Hồng Trắng",
+    "nameEn": "White Rose Dumpling House",
+    "category": "food",
+    "tags": "Specialty, Traditional, Clean",
+    "latitude": 15.8798,
+    "longitude": 108.3289,
+    "averageCost": 100000,
+    "estimatedDurationMinutes": 40,
+    "openingTime": "08:00:00",
+    "closingTime": "20:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Lò làm bánh vạc lâu đời nhất Hội An, thưởng thức những chiếc bánh trong ngần như cánh hoa hồng trắng đầy tinh tế.",
+    "descriptionEn": "The historic workshop of White Rose dumplings, crafted carefully to resemble elegant transparent roses.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Four Seasons The Nam Hai",
+    "nameEn": "Four Seasons Resort The Nam Hai",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Luxury, Beach",
+    "latitude": 15.9189,
+    "longitude": 108.3235,
+    "averageCost": 7500000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 5.0,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Khu nghỉ dưỡng 5 sao đẳng cấp quốc tế tọa lạc bên bãi biển Hà My nguyên sơ, dịch vụ thượng lưu hoàn hảo.",
+    "descriptionEn": "An ultra-luxury 5-star oceanfront resort on Ha My Beach, providing world-class sunset villas.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Làng Gốm Thanh Hà",
+    "nameEn": "Thanh Ha Pottery Village",
+    "category": "sightseeing",
+    "tags": "Culture, Workshop, Heritage",
+    "latitude": 15.8795,
+    "longitude": 108.3085,
+    "averageCost": 35000,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "08:00:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Ngôi làng cổ hơn 500 năm tuổi lưu giữ nghề làm gốm nung đất sét thủ công độc đáo ven sông Thu Bồn.",
+    "descriptionEn": "A 500-year-old terracotta handicraft sanctuary along Thu Bon river. You can spin your own clay souvenir.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Phin Coffee Ẩn Giữa Vườn Chiều",
+    "nameEn": "Phin Coffee Secret Garden",
+    "category": "cafe",
+    "tags": "Healing, Chill, Detail",
+    "latitude": 15.8779,
+    "longitude": 108.3245,
+    "averageCost": 45000,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "08:00:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "low",
+    "rating": 4.8,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Quán cafe ẩn mình sâu trong con ngõ nhỏ yên tĩnh, chuyên cà phê pha phin truyền thống và không khí sân vườn tĩnh tại.",
+    "descriptionEn": "A quiet garden cafe tucked deep inside a historic alleyway, specializing in drip coffee and green spaces.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bê Thui Cầu Mống Mười",
+    "nameEn": "Muoi Cau Mong Veal Barbecue",
+    "category": "food",
+    "tags": "Local Taste, Specialty, Hearty",
+    "latitude": 15.8621,
+    "longitude": 108.3255,
+    "averageCost": 120000,
+    "estimatedDurationMinutes": 50,
+    "openingTime": "10:00:00",
+    "closingTime": "21:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, family, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Thịt bê thui chín hồng tái mềm ngọt da giòn tan, cuốn bánh tráng rau rừng chấm mắm nêm chưng cực đỉnh.",
+    "descriptionEn": "Succulent roast veal with crispy skin, wrapped in transparent rice paper, wild forest herbs and rich anchovy dip.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hoi An Chic Hotel",
+    "nameEn": "Hoi An Chic Hotel",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Green, Cozy",
+    "latitude": 15.8858,
+    "longitude": 108.3492,
+    "averageCost": 1100000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.7,
+    "suitableFor": "couple, family, solo",
+    "timeOfDay": "night",
+    "descriptionVi": "Khách sạn sinh thái bao bọc bởi cánh đồng lúa xanh Cẩm Châu thơ mộng, có hồ bơi sân thượng tuyệt vời.",
+    "descriptionEn": "An eco-chic boutique hotel surrounded by beautiful Cam Chau rice paddies, boasting a cool rooftop pool.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Làng Rau Trà Quế",
+    "nameEn": "Tra Que Vegetable Village",
+    "category": "sightseeing",
+    "tags": "Culture, Nature, Healing",
+    "latitude": 15.8975,
+    "longitude": 108.3395,
+    "averageCost": 20000,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "07:00:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Làng nông nghiệp trồng rau hữu cơ bón bằng rong từ đầm rong sông cổ, thơm ngon hương vị riêng biệt.",
+    "descriptionEn": "A historic organic herb farming community fertile with local river algae. Try farming with local hosts.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "The Deck House An Bàng",
+    "nameEn": "The Deck House Beach Club An Bang",
+    "category": "cafe",
+    "tags": "Beach, Music, Luxury",
+    "latitude": 15.9085,
+    "longitude": 108.3392,
+    "averageCost": 120000,
+    "estimatedDurationMinutes": 120,
+    "openingTime": "08:00:00",
+    "closingTime": "23:00:00",
+    "crowdLevel": "high",
+    "rating": 4.5,
+    "suitableFor": "couple, friends",
+    "timeOfDay": "afternoon, evening",
+    "descriptionVi": "Beach club phong cách Santorini nổi tiếng với tone xanh trắng, ôm trọn bãi tắm An Bàng sầm uất sôi động.",
+    "descriptionEn": "A vibrant Santorini-themed coastal lounge overlooking An Bang beach, serving cocktails under deep house beats.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Thịt Nướng Chợ Đêm Sông Hoài",
+    "nameEn": "Riverside Night Market Pork Skewers",
+    "category": "food",
+    "tags": "Street Food, Cheap, Local Taste",
+    "latitude": 15.8763,
+    "longitude": 108.3228,
+    "averageCost": 15000,
+    "estimatedDurationMinutes": 25,
+    "openingTime": "17:00:00",
+    "closingTime": "22:30:00",
+    "crowdLevel": "high",
+    "rating": 4.7,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "evening",
+    "descriptionVi": "Những xiên thịt heo nướng sả thơm phức cuốn bánh ướt mỏng dính, rau sống xanh mướt chấm tương đậu ngậy bùi.",
+    "descriptionEn": "Lemongrass charcoal-grilled pork skewers wrapped in wet rice sheets, fresh greens and signature peanut sauce.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hoi An Trails Resort",
+    "nameEn": "Hoi An Trails Resort",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Nature, Garden",
+    "latitude": 15.8921,
+    "longitude": 108.3485,
+    "averageCost": 1500000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.6,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Khu nghỉ dưỡng ngập trạng cỏ cây hoa lá miền nhiệt đới yên bình nằm giữa chặng đường từ phố cổ ra bãi biển.",
+    "descriptionEn": "A tropical garden estate featuring deep greenery, located halfway between the historic core and ocean beaches.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Thánh Địa Mỹ Sơn",
+    "nameEn": "My Son Sanctuary Ruins",
+    "category": "sightseeing",
+    "tags": "Culture, Heritage, History",
+    "latitude": 15.7645,
+    "longitude": 108.1245,
+    "averageCost": 150000,
+    "estimatedDurationMinutes": 180,
+    "openingTime": "06:30:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.8,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Thung lũng di sản đền đài Chămpa cổ kính, bao bọc bởi đồi núi linh thiêng thâm nghiêm bí ẩn.",
+    "descriptionEn": "A UNESCO heritage valley displaying ancient Cham empire brick towers, cradled by sacred mountain peaks.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Espresso Station Cổ Kính",
+    "nameEn": "The Espresso Station Hidden Alley",
+    "category": "cafe",
+    "tags": "Chill, Specialty, Detail",
+    "latitude": 15.8791,
+    "longitude": 108.3299,
+    "averageCost": 55000,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "07:30:00",
+    "closingTime": "17:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.7,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Góc cà phê ẩn sau bức tường vàng ngõ nhỏ, nổi tiếng với món Cà phê Than tre độc đáo đầy nghệ thuật.",
+    "descriptionEn": "A scenic garden cafe famous for artistic charcoal lattes, tucked away behind a weathered yellow wall.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Nhà Hàng Morning Glory",
+    "nameEn": "Morning Glory Restaurant",
+    "category": "food",
+    "tags": "Traditional, Clean, Specialty",
+    "latitude": 15.8765,
+    "longitude": 108.3268,
+    "averageCost": 150000,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "11:00:00",
+    "closingTime": "22:00:00",
+    "crowdLevel": "high",
+    "rating": 4.5,
+    "suitableFor": "couple, family, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Nhà hàng chuyên ẩm thực gia đình Hội An tinh tế của đầu bếp Trịnh Diễm Vy nằm giữa trung tâm phố cổ sầm uất.",
+    "descriptionEn": "Refined family heritage recipes from local chef Vy, housed in a charming heritage building.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Eco Resort Hoi An Waterway",
+    "nameEn": "Eco Resort Hoi An Waterway",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Green, River",
+    "latitude": 15.8795,
+    "longitude": 108.3499,
+    "averageCost": 1300000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.6,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Khu nghỉ dưỡng xanh mát dọc rạch nước sông Cổ Cò tĩnh lặng, đầy gió mát và hàng tre xào xạc.",
+    "descriptionEn": "A breezy eco-boutique resort along peaceful waterways, shaded by high green bamboo groves.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bãi Biển An Bàng Hoang Sơ",
+    "nameEn": "An Bang Pristine Beach",
+    "category": "sightseeing",
+    "tags": "Beach, Nature, Views",
+    "latitude": 15.9095,
+    "longitude": 108.3385,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 120,
+    "openingTime": "00:00:00",
+    "closingTime": "23:59:59",
+    "crowdLevel": "high",
+    "rating": 4.7,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Một trong 50 bãi biển đẹp nhất hành tinh, cát trắng mịn sóng êm mượt mà ôm sát làng chài mộc mạc.",
+    "descriptionEn": "Praised as one of the world's top 50 beaches, offering fine white sand and soothing gentle waves.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hoi An Roastery Trung Tâm",
+    "nameEn": "Hoi An Roastery Coffee",
+    "category": "cafe",
+    "tags": "Chill, Check-in, Specialty",
+    "latitude": 15.8769,
+    "longitude": 108.3278,
+    "averageCost": 55000,
+    "estimatedDurationMinutes": 50,
+    "openingTime": "07:00:00",
+    "closingTime": "21:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Cà phê máy rang xay hạt hữu cơ chất lượng cao ngay tại chỗ, trang trí đèn lồng xanh dương vintage thanh nhã.",
+    "descriptionEn": "A classic boutique roastery roasting organic specialty beans under iconic hanging sky-blue lanterns.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Chợ Đêm Hội An Sông Hoài",
+    "nameEn": "Hoi An Riverside Night Market",
+    "category": "sightseeing",
+    "tags": "Culture, Street Food, Shopping",
+    "latitude": 15.8762,
+    "longitude": 108.3232,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "17:30:00",
+    "closingTime": "23:00:00",
+    "crowdLevel": "high",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "evening",
+    "descriptionVi": "Chợ đêm rực rỡ sắc màu dọc sông Hoài, nơi hội tụ đồ lưu niệm thủ công mỹ nghệ và ẩm thực đường phố đặc sản.",
+    "descriptionEn": "A vibrant night street market stretching along the riverbank, showcasing silk lanterns and local snacks.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Hoi An Rice Field Homestay",
+    "nameEn": "Hoi An Rice Field Homestay",
+    "category": "stay",
+    "tags": "Healing, Rice Fields, Cozy",
+    "latitude": 15.8895,
+    "longitude": 108.3475,
+    "averageCost": 350000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.8,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "night",
+    "descriptionVi": "Homestay mộc mạc nép mình bên ruộng lúa thơm ngọt, ngắm đàn chim bay lượn lúc bình minh rạng rỡ.",
+    "descriptionEn": "A cozy, budget-friendly homestay directly bordering golden rice fields. Awake to singing birds.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bánh Xèo Giếng Bá Lễ",
+    "nameEn": "Ba Le Well Pancake House",
+    "category": "food",
+    "tags": "Local Taste, Specialty, Cheap",
+    "latitude": 15.8795,
+    "longitude": 108.3308,
+    "averageCost": 80000,
+    "estimatedDurationMinutes": 45,
+    "openingTime": "11:00:00",
+    "closingTime": "21:30:00",
+    "crowdLevel": "high",
+    "rating": 4.5,
+    "suitableFor": "couple, family, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Tiệm bánh xèo chiên bằng bếp than cổ giòn tan cuộn bánh tráng, xiên thịt nướng chấm nước tương gan gia truyền đậm đà.",
+    "descriptionEn": "Crunchy Vietnamese sizzle crêpes accompanied by juicy pork satay and legendary warm pork liver dipping sauce.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Xưởng Trà & Gốm Hội An",
+    "nameEn": "Tea & Terracotta Heritage Space",
+    "category": "cafe",
+    "tags": "Culture, Silence, Healing",
+    "latitude": 15.8778,
+    "longitude": 108.3261,
+    "averageCost": 70000,
+    "estimatedDurationMinutes": 75,
+    "openingTime": "08:30:00",
+    "closingTime": "18:00:00",
+    "crowdLevel": "low",
+    "rating": 4.8,
+    "suitableFor": "couple, solo",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Không gian thưởng trà di sản kết hợp trưng bày gốm mộc Thanh Hà xưa cũ, cực thư thái.",
+    "descriptionEn": "An peaceful heritage teahouse showcasing local Thanh Ha terracotta pieces, an absolute retreat.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Làng Kim Bồng Nghề Mộc",
+    "nameEn": "Kim Bong Carpentry Village",
+    "category": "sightseeing",
+    "tags": "Culture, Heritage, Workshop",
+    "latitude": 15.8650,
+    "longitude": 108.3180,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "08:00:00",
+    "closingTime": "17:00:00",
+    "crowdLevel": "low",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Ngôi làng mộc chạm khắc tinh xảo có bề dày lịch sử cung cấp thợ mộc xây cung điện Huế xưa kia.",
+    "descriptionEn": "A tranquil village home to generations of master woodcarvers who decorated imperial palaces.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Làng Chài Duy Hải bình minh",
+    "nameEn": "Duy Hai Fishing Village Sunrise",
+    "category": "sightseeing",
+    "tags": "Nature, Culture, Early",
+    "latitude": 15.8645,
+    "longitude": 108.3495,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 90,
+    "openingTime": "05:00:00",
+    "closingTime": "08:30:00",
+    "crowdLevel": "medium",
+    "rating": 4.8,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning",
+    "descriptionVi": "Họp chợ cá sớm lung linh ánh nắng bình minh, ngắm hàng trăm chiếc thúng thuyền cập bến cá tươi roi rói.",
+    "descriptionEn": "A bustling morning fish market at dawn, capturing the dynamic coastal life and fresh daily catches.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Little Town Villa",
+    "nameEn": "Little Town Villa",
+    "category": "stay",
+    "tags": "Nghỉ dưỡng, Green, Pool",
+    "latitude": 15.8792,
+    "longitude": 108.3325,
+    "averageCost": 850000,
+    "estimatedDurationMinutes": 1440,
+    "openingTime": "14:00:00",
+    "closingTime": "12:00:00",
+    "crowdLevel": "low",
+    "rating": 4.6,
+    "suitableFor": "couple, family",
+    "timeOfDay": "night",
+    "descriptionVi": "Villa sân vườn thanh lịch, xanh mướt ngập tràn cọ nước, hồ bơi riêng tư yên tĩnh giữa lòng phố cổ.",
+    "descriptionEn": "An elegant, quiet garden hotel lined with water palms and offering a secluded luxury swimming pool.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Nước Thảo Mộc Mót Hội An",
+    "nameEn": "Mot Herbal Tea House",
+    "category": "food",
+    "tags": "Street Food, Cheap, Check-in",
+    "latitude": 15.8772,
+    "longitude": 108.3285,
+    "averageCost": 15000,
+    "estimatedDurationMinutes": 15,
+    "openingTime": "08:00:00",
+    "closingTime": "22:00:00",
+    "crowdLevel": "high",
+    "rating": 4.7,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Ly nước trà thảo mộc sả chanh mát lịm trang trí đóa hoa sen hồng tao nhã, mát rượi giải nhiệt.",
+    "descriptionEn": "Famous lemon-lemongrass herbal iced tea elegantly decorated with a fresh pink lotus petal.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Rosie's Cafe Ẩn Mình",
+    "nameEn": "Rosie's Cafe Cozy Courtyard",
+    "category": "cafe",
+    "tags": "Chill, Check-in, Cozy",
+    "latitude": 15.8785,
+    "longitude": 108.3248,
+    "averageCost": 50000,
+    "estimatedDurationMinutes": 75,
+    "openingTime": "08:00:00",
+    "closingTime": "17:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Quán cafe phong cách tối giản mộc mạc ngập tràn ánh nắng tự nhiên và khoảng sân xanh nho nhỏ bình yên.",
+    "descriptionEn": "A beautiful minimalist cafe with high natural sun-glare, delicious brunch, and green plant corners.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Chợ Hội An Ẩm Thực Sáng",
+    "nameEn": "Hoi An Main Market Food",
+    "category": "sightseeing",
+    "tags": "Culture, Local Taste, Cheap",
+    "latitude": 15.8775,
+    "longitude": 108.3305,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 60,
+    "openingTime": "06:00:00",
+    "closingTime": "18:00:00",
+    "crowdLevel": "high",
+    "rating": 4.6,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "morning, lunch",
+    "descriptionVi": "Khu chợ sầm uất rực rỡ tiếng nói cười, khám phá ẩm thực phong phú rẻ bèo từ bánh xèo, chè đến bún thịt nướng.",
+    "descriptionEn": "A raw, vibrant market food hall packing rows of colorful authentic local food stalls.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1601050690597-df056fb4ce78?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Cao Lầu Liên",
+    "nameEn": "Lien Cao Lau House",
+    "category": "food",
+    "tags": "Local Taste, Cheap, Specialty",
+    "latitude": 15.8788,
+    "longitude": 108.3275,
+    "averageCost": 35000,
+    "estimatedDurationMinutes": 30,
+    "openingTime": "13:00:00",
+    "closingTime": "19:30:00",
+    "crowdLevel": "high",
+    "rating": 4.6,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Quán ăn gia truyền lâu đời chuyên dòng Cao Lầu nước dùng ngọt béo, xá xíu đậm đà trứ danh đất hội.",
+    "descriptionEn": "A classic rustic diner serving some of the city's finest and most authentic Cao Lau bowls since 1980s.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Nhà Cổ Phùng Hưng",
+    "nameEn": "Phung Hung Old House",
+    "category": "sightseeing",
+    "tags": "Heritage, History, Architecture",
+    "latitude": 15.8769,
+    "longitude": 108.3251,
+    "averageCost": 0,
+    "estimatedDurationMinutes": 35,
+    "openingTime": "08:00:00",
+    "closingTime": "18:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo",
+    "timeOfDay": "morning, afternoon",
+    "descriptionVi": "Ngôi nhà cổ có tuổi đời hơn 240 năm giao thoa hài hòa giữa ba dòng kiến trúc Nhật - Hoa - Việt rất độc đáo.",
+    "descriptionEn": "A gorgeous 240-year-old wooden house blending architectural elements of Vietnam, Japan and China.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1547983600-9792a18a2601?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "The Hill Station Cafe Vy",
+    "nameEn": "The Hill Station Heritage Cafe",
+    "category": "cafe",
+    "tags": "Cozy, Views, Historic",
+    "latitude": 15.8768,
+    "longitude": 108.3308,
+    "averageCost": 60000,
+    "estimatedDurationMinutes": 75,
+    "openingTime": "07:30:00",
+    "closingTime": "22:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.6,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning, afternoon, evening",
+    "descriptionVi": "Ngôi nhà gạch Pháp cổ kính với mảng tường phong rêu trầm mặc, phục vụ cafe thượng hạng ấm áp.",
+    "descriptionEn": "A beautiful French colonial brick villa serving quality espresso, cured meats, and cheese.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bánh Vạc Hoa Hồng Trắng Bông Hồng",
+    "nameEn": "Bong Hong White Rose Eatery",
+    "category": "food",
+    "tags": "Local Taste, Specialty, Budget",
+    "latitude": 15.8781,
+    "longitude": 108.3282,
+    "averageCost": 70000,
+    "estimatedDurationMinutes": 30,
+    "openingTime": "08:30:00",
+    "closingTime": "20:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.5,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "lunch, dinner",
+    "descriptionVi": "Địa chỉ bình dân chuyên bán bánh vạc hến xào bọc bột trong vắt rắc hành phi thơm nức lòng.",
+    "descriptionEn": "A popular budget joint specializing in signature shrimp dumplings topped with deep-fried shallots.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Bến thuyền sông Hoài đèn lồng",
+    "nameEn": "Hoai River Lantern Boat Quay",
+    "category": "sightseeing",
+    "tags": "Culture, Views, Sunset",
+    "latitude": 15.8765,
+    "longitude": 108.3245,
+    "averageCost": 50000,
+    "estimatedDurationMinutes": 45,
+    "openingTime": "16:00:00",
+    "closingTime": "22:30:00",
+    "crowdLevel": "high",
+    "rating": 4.8,
+    "suitableFor": "couple, family, solo, friends",
+    "timeOfDay": "evening",
+    "descriptionVi": "Trải nghiệm đi thuyền gỗ thả hoa đăng sông Hoài thơ mộng, đón gió mát rì rào ngắm đèn lồng lung linh soi bóng.",
+    "descriptionEn": "Float custom-made paper lanterns on the historic river while drifting on a traditional wooden canoe.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  },
+  {
+    "nameVi": "Cham Island Snorkeling Tour",
+    "nameEn": "Cham Island Coral Snorkeling",
+    "category": "sightseeing",
+    "tags": "Adventure, Beach, Nature",
+    "latitude": 15.8725,
+    "longitude": 108.3850,
+    "averageCost": 850000,
+    "estimatedDurationMinutes": 360,
+    "openingTime": "08:00:00",
+    "closingTime": "15:00:00",
+    "crowdLevel": "medium",
+    "rating": 4.7,
+    "suitableFor": "couple, solo, friends",
+    "timeOfDay": "morning",
+    "descriptionVi": "Chuyến khám phá cano cao tốc lặn ngắm san hô bãi biển Cù Lao Chàm, thưởng thức hải sản đảo hoang dã.",
+    "descriptionEn": "A half-day marine adventure by speed boat to Cham Island. Swim among rich pristine coral reefs.",
+    "images": [
+      {
+        "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=500&q=80"
+      }
+    ]
+  }
+]

@@ -1,28 +1,38 @@
-# Environment variables
+# Environment files
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # IDE
 .idea/
 .vscode/
+*.iml
 *.swp
 *.swo
 
-# Build
+# Build output
 target/
 build/
 dist/
+.gradle/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Dependencies
-node_modules/
-.gradle/
+# Secret / key material
+*.key
+*.pem
+*.p12
+*.jks
+*.keystore
 
-# Logs
-*.log
-
-target/
+# Default ignored files
+/shelf/
+/workspace.xml
