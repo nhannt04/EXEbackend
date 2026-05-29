@@ -3,16 +3,28 @@
 .env.*
 !.env.example
 
-# Build output
-target/
-
-# IDE files
+# IDE
 .idea/
 .vscode/
 *.iml
+*.swp
+*.swo
+
+# Build output
+target/
+build/
+dist/
+.gradle/
+
+# Dependencies
+node_modules/
 
 # Logs
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Secret / key material
 *.key
@@ -20,6 +32,7 @@ target/
 *.p12
 *.jks
 *.keystore
+
 # Default ignored files
 /shelf/
 /workspace.xml
