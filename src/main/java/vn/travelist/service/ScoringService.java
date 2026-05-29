@@ -103,12 +103,13 @@ public class ScoringService {
         }
 
         // ── 4. Budget Fit Score (gradient thay vì binary) ─────────────────────
+        Integer maxOrAvgCost = spot.getMaxCost() != null ? spot.getMaxCost() : spot.getAverageCost();
         if (request.getBudget() != null && request.getPeople() != null
-                && request.getDays() != null && spot.getAverageCost() != null) {
+                && request.getDays() != null && maxOrAvgCost != null) {
             int people = Math.max(1, request.getPeople());
             int days   = Math.max(1, request.getDays());
             int budgetPerPersonPerDay = request.getBudget() / people / days;
-            int cost = spot.getAverageCost();
+            int cost = maxOrAvgCost;
 
             if (cost == 0) {
                 score += 10.0; // Miễn phí = nhẹ bonus

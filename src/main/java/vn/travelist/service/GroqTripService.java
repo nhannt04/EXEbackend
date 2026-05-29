@@ -95,7 +95,7 @@ public class GroqTripService {
             m.put("category", s.getCategory()); // sightseeing, food, cafe, stay
             m.put("tags", s.getTags());
             m.put("rating", s.getRating());
-            m.put("cost", s.getAverageCost() != null ? s.getAverageCost() : 0);
+            m.put("cost", s.getMaxCost() != null ? s.getMaxCost() : (s.getAverageCost() != null ? s.getAverageCost() : 0));
             m.put("duration_min", s.getEstimatedDurationMinutes() != null ? s.getEstimatedDurationMinutes() : 60);
             m.put("suitable_for", s.getSuitableFor());
             m.put("time_of_day", s.getTimeOfDay()); // morning, afternoon, evening
@@ -271,11 +271,14 @@ public class GroqTripService {
             int days   = request.getDays()   != null ? request.getDays()   : 1;
             transportEst  = 100000 * people * days;
             hotelEstimate = 300000 * people * days;
-            // Tính activity cost từ các spots được chọn
             activityCost = daySchedules.stream()
                 .flatMap(d -> d.getSpots().stream())
                 .filter(s -> !"STAY".equals(s.getSlot()))
-                .mapToInt(s -> s.getSpot().getAverageCost() != null ? s.getSpot().getAverageCost() * people : 0)
+                .mapToInt(s -> {
+                    Integer max = s.getSpot().getMaxCost();
+                    Integer avg = s.getSpot().getAverageCost();
+                    return (max != null ? max : (avg != null ? avg : 0)) * people;
+                })
                 .sum();
             totalCost = activityCost + hotelEstimate + transportEst;
         }

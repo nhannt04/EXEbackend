@@ -116,14 +116,14 @@ public class TripService {
             if (morningSpot != null) {
                 int dur = orDefault(morningSpot.getEstimatedDurationMinutes(), 90);
                 dailySlots.add(buildSlot("MORNING", timeRange(8, 0, dur, "Tham quan & Khám phá"), morningSpot));
-                totalActivityCost += orDefault(morningSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(morningSpot);
             }
 
             // 10:30 – Cafe sáng (nếu Healing/Romantic style)
             if (("healing".equals(style) || "romantic".equals(style)) && cafeSpot != null) {
                 int dur = orDefault(cafeSpot.getEstimatedDurationMinutes(), 60);
                 dailySlots.add(buildSlot("CAFE_MORNING", timeRange(10, 30, dur, "Cà phê & Thư giãn"), cafeSpot));
-                totalActivityCost += orDefault(cafeSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(cafeSpot);
                 cafeSpot = null; // Đã dùng, không dùng lại buổi chiều
             }
 
@@ -131,28 +131,28 @@ public class TripService {
             if (lunchSpot != null) {
                 int dur = orDefault(lunchSpot.getEstimatedDurationMinutes(), 60);
                 dailySlots.add(buildSlot("LUNCH", timeRange(12, 0, dur, "Ăn trưa & Nghỉ ngơi"), lunchSpot));
-                totalActivityCost += orDefault(lunchSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(lunchSpot);
             }
 
             // 14:30 – Buổi chiều tham quan
             if (afternoonSpot != null) {
                 int dur = orDefault(afternoonSpot.getEstimatedDurationMinutes(), 90);
                 dailySlots.add(buildSlot("AFTERNOON", timeRange(14, 30, dur, "Tham quan buổi chiều"), afternoonSpot));
-                totalActivityCost += orDefault(afternoonSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(afternoonSpot);
             }
 
             // 17:00 – Cafe chiều (không phải Healing vì đã có cafe sáng)
             if (cafeSpot != null) {
                 int dur = orDefault(cafeSpot.getEstimatedDurationMinutes(), 60);
                 dailySlots.add(buildSlot("CAFE", timeRange(17, 0, dur, "Cà phê & Chill"), cafeSpot));
-                totalActivityCost += orDefault(cafeSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(cafeSpot);
             }
 
             // 19:00 – Buổi tối tham quan / check-in đêm
             if (eveningSpot != null) {
                 int dur = orDefault(eveningSpot.getEstimatedDurationMinutes(), 60);
                 dailySlots.add(buildSlot("EVENING", timeRange(19, 0, dur, "Trải nghiệm buổi tối"), eveningSpot));
-                totalActivityCost += orDefault(eveningSpot.getAverageCost(), 0);
+                totalActivityCost += getSpotCost(eveningSpot);
             }
 
             // 21:30 – Chỗ nghỉ cuối ngày
@@ -171,9 +171,9 @@ public class TripService {
 
         // 6. Tính chi phí tổng thực tế
         int totalActivityCostTotal = totalActivityCost * people;
-        int stayEstimate = staySpot != null
-            ? orDefault(staySpot.getAverageCost(), 300000) * people * daysCount
-            : 300000 * people * daysCount;
+        int stayCostVal = staySpot != null ? getSpotCost(staySpot) : 300000;
+        if (stayCostVal <= 0) stayCostVal = 300000;
+        int stayEstimate = stayCostVal * people * daysCount;
         int transportEstimate = 100000 * people * daysCount;
         int totalCost = totalActivityCostTotal + stayEstimate + transportEstimate;
 
@@ -214,6 +214,14 @@ public class TripService {
             .collect(Collectors.toList());
     }
 
+    private int getSpotCost(Spot s) {
+        if (s == null) return 0;
+        Integer max = s.getMaxCost();
+        if (max != null) return max;
+        Integer avg = s.getAverageCost();
+        return avg != null ? avg : 0;
+    }
+
     /** Chọn chỗ nghỉ phù hợp nhất theo style */
     private Spot pickBestStay(List<Spot> stayPool, String style, TripRequest request) {
         if (stayPool.isEmpty()) return null;
@@ -227,7 +235,7 @@ public class TripService {
         // Adventure → không cần luxury, chọn giá hợp lý nhất
         if ("adventure".equals(style) || "explorer".equals(style)) {
             return stayPool.stream()
-                .filter(s -> s.getAverageCost() != null && s.getAverageCost() < 1000000)
+                .filter(s -> getSpotCost(s) < 1000000)
                 .findFirst()
                 .orElse(stayPool.get(0));
         }
