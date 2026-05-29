@@ -9,11 +9,11 @@
         <relativePath/>
         <!-- lookup parent from repository -->
     </parent>
-    <groupId>vn.histra</groupId>
-    <artifactId>histra-backend</artifactId>
+    <groupId>vn.travelist</groupId>
+    <artifactId>travelist-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>histra-backend</name>
-    <description>HISTRA Capstone Java Backend Application</description>
+    <name>travelist-backend</name>
+    <description>Travelist Capstone Java Backend Application</description>
     <properties>
         <java.version>17</java.version>
     </properties>
@@ -73,6 +73,13 @@
             <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- Spring Boot DevTools for automatic rebuild/restart upon code changes -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -104,6 +111,13 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
         </plugins>

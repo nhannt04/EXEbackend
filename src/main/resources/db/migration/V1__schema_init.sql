@@ -1,5 +1,5 @@
 -- V1__schema_init.sql
--- Khởi tạo cấu trúc các bảng cho dự án HISTRA trên Neon PostgreSQL
+-- Khởi tạo cấu trúc các bảng cho dự án Travelist trên Neon PostgreSQL
 
 -- 1. Bảng lưu trữ thông tin Người dùng (users)
 CREATE TABLE IF NOT EXISTS users (
@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS spots (
     tags VARCHAR(255) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL,
+    min_cost INTEGER DEFAULT 0,
+    max_cost INTEGER DEFAULT 0,
     average_cost INTEGER DEFAULT 0,
     estimated_duration_minutes INTEGER DEFAULT 60,
     opening_time TIME DEFAULT '08:00:00',

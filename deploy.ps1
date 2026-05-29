@@ -1,8 +1,8 @@
-# HISTRA Backend - Render Deploy Script (PowerShell)
+# Travelist Backend - Render Deploy Script (PowerShell)
 # Run this script from the project root directory
 
 Write-Host "╔════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║  HISTRA Backend - Render Deploy Script    ║" -ForegroundColor Cyan
+Write-Host "║  Travelist Backend - Render Deploy Script  ║" -ForegroundColor Cyan
 Write-Host "╚════════════════════════════════════════════╝" -ForegroundColor Cyan
 Write-Host ""
 

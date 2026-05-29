@@ -1,8 +1,8 @@
 #!/bin/bash
-# Deploy script for HISTRA Backend to Render
+# Deploy script for Travelist Backend to Render
 
 echo "╔════════════════════════════════════════════╗"
-echo "║  HISTRA Backend - Render Deploy Script    ║"
+echo "║  Travelist Backend - Render Deploy Script  ║"
 echo "╚════════════════════════════════════════════╝"
 echo ""
 
