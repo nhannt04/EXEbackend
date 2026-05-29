@@ -20,7 +20,7 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # Copy jar từ builder stage
-COPY --from=builder /app/target/histra-backend-*.jar app.jar
+COPY --from=builder /app/target/travelist-backend-*.jar app.jar
 
 # Expose port (Render mặc định sử dụng $PORT)
 EXPOSE 8080
