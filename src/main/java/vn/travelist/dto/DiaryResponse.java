@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.travelist.model.Spot;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,7 +21,6 @@ public class DiaryResponse {
     private java.util.List<vn.travelist.model.DiaryImage> images;
     private Integer likesCount;
     private LocalDateTime createdAt;
-    private Spot spot;
     private AuthorInfo user;
     private List<CommentResponse> comments;
 

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import vn.travelist.dto.TripRequest;
 import vn.travelist.dto.TripResponse;
 import vn.travelist.model.Spot;
-import vn.travelist.repository.SpotRepository;
 
 import java.time.LocalTime;
 import java.util.*;
@@ -15,13 +14,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TripService {
 
-    private final SpotRepository spotRepository;
+    private final SpotService spotService;
     private final ScoringService scoringService;
     private final RouteOptimizationService routeOptimizationService;
 
     public TripResponse generateItinerary(TripRequest request) {
         // 1. Tải toàn bộ địa điểm từ Database
-        List<Spot> allSpots = spotRepository.findAll();
+        List<Spot> allSpots = spotService.searchSpots(null, null);
         if (allSpots.isEmpty()) {
             throw new RuntimeException("Cơ sở dữ liệu địa điểm đang rỗng. Vui lòng seed data trước!");
         }

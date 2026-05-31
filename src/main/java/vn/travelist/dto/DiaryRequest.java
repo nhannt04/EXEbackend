@@ -15,7 +15,6 @@ public class DiaryRequest {
     private String category;
     private String contentVi;
     private String contentEn;
-    private Long spotId;
     private List<ImageDto> images;
 
     @Data

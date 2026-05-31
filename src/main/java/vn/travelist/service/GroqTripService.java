@@ -11,7 +11,12 @@ import org.springframework.web.client.RestTemplate;
 import vn.travelist.dto.TripRequest;
 import vn.travelist.dto.TripResponse;
 import vn.travelist.model.Spot;
-import vn.travelist.repository.SpotRepository;
+import vn.travelist.repository.*;
+import vn.travelist.model.*;
+import java.time.LocalTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,10 +35,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GroqTripService {
 
-    private final SpotRepository spotRepository;
     private final TripService fallbackTripService;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
+
+    private final DishRepository dishRepository;
+    private final CafeRepository cafeRepository;
+    private final StayRepository stayRepository;
+    private final EntertainmentRepository entertainmentRepository;
+    private final RentalRepository rentalRepository;
 
     @Value("${groq.api-key:}")
     private String groqApiKey;
@@ -52,9 +62,205 @@ public class GroqTripService {
         }
 
         try {
-            List<Spot> allSpots = spotRepository.findAll();
+            List<Spot> allSpots = new ArrayList<>();
+
+            // 1. Map Stays
+            try {
+                stayRepository.findAll().forEach(stay -> {
+                    // Chỉ thêm nếu có hình ảnh
+                    if (stay.getImageUrl() == null || stay.getImageUrl().isBlank()) {
+                        log.debug("[GroqTripService] Bỏ qua Stay {} - không có hình ảnh", stay.getName());
+                        return;
+                    }
+
+                    Spot spot = Spot.builder()
+                        .id(100000L + stay.getId())
+                        .nameVi(stay.getName())
+                        .nameEn(stay.getName())
+                        .category("stay")
+                        .tags("khách sạn, homestay, lưu trú, nghỉ dưỡng, stay, " + stay.getType())
+                        .latitude(stay.getLatitude() != null ? stay.getLatitude() : 15.8801)
+                        .longitude(stay.getLongitude() != null ? stay.getLongitude() : 108.3380)
+                        .minCost(stay.getMinPrice())
+                        .maxCost(stay.getMaxPrice())
+                        .averageCost(stay.getMinPrice() != null && stay.getMaxPrice() != null ? (stay.getMinPrice() + stay.getMaxPrice()) / 2 : 0)
+                        .estimatedDurationMinutes(480)
+                        .openingTime(LocalTime.of(0, 0))
+                        .closingTime(LocalTime.of(23, 59))
+                        .crowdLevel("low")
+                        .rating(4.9)
+                        .suitableFor("couple, family, group, solo")
+                        .timeOfDay("evening")
+                        .descriptionVi("Nơi lưu trú cao cấp: " + stay.getName() + " (" + stay.getType() + "). Sức chứa: " + stay.getCapacity() + ". Địa chỉ: " + stay.getAddress() + ". Ghi chú: " + stay.getNotes())
+                        .descriptionEn("Premium accommodation: " + stay.getName() + " (" + stay.getType() + "). Capacity: " + stay.getCapacity() + ". Address: " + stay.getAddress() + ". Notes: " + stay.getNotes())
+                        .build();
+
+                    SpotImage img = SpotImage.builder().imageUrl(stay.getImageUrl()).build();
+                    spot.setImages(new ArrayList<>(List.of(img)));
+                    allSpots.add(spot);
+                });
+            } catch (Exception e) {
+                log.error("[GroqTripService] Lỗi load stays: {}", e.getMessage());
+            }
+
+            // 2. Map Cafes
+            try {
+                cafeRepository.findAll().forEach(cafe -> {
+                    // Chỉ thêm nếu có hình ảnh
+                    if (cafe.getImageUrl() == null || cafe.getImageUrl().isBlank()) {
+                        log.debug("[GroqTripService] Bỏ qua Cafe {} - không có hình ảnh", cafe.getName());
+                        return;
+                    }
+
+                    Spot spot = Spot.builder()
+                        .id(200000L + cafe.getId())
+                        .nameVi(cafe.getName())
+                        .nameEn(cafe.getName())
+                        .category("cafe")
+                        .tags("cafe, cà phê, chill, nước uống" + (cafe.getStyle() != null ? ", " + cafe.getStyle() : ""))
+                        .latitude(cafe.getLatitude() != null ? cafe.getLatitude() : 15.8801)
+                        .longitude(cafe.getLongitude() != null ? cafe.getLongitude() : 108.3380)
+                        .minCost(cafe.getMinPrice())
+                        .maxCost(cafe.getMaxPrice())
+                        .averageCost(cafe.getMinPrice() != null && cafe.getMaxPrice() != null ? (cafe.getMinPrice() + cafe.getMaxPrice()) / 2 : 0)
+                        .estimatedDurationMinutes(60)
+                        .openingTime(cafe.getOpeningTime() != null ? cafe.getOpeningTime() : LocalTime.of(7, 0))
+                        .closingTime(cafe.getClosingTime() != null ? cafe.getClosingTime() : LocalTime.of(22, 0))
+                        .crowdLevel("medium")
+                        .rating(4.7)
+                        .suitableFor("couple, family, group, solo")
+                        .timeOfDay("morning, afternoon, evening")
+                        .descriptionVi("Quán cà phê chill Hội An: " + cafe.getName() + " phong cách " + cafe.getStyle() + ". Địa chỉ: " + cafe.getAddress())
+                        .descriptionEn("Chill Hoi An cafe: " + cafe.getName() + " styled as " + cafe.getStyle() + ". Address: " + cafe.getAddress())
+                        .build();
+
+                    SpotImage img = SpotImage.builder().imageUrl(cafe.getImageUrl()).build();
+                    spot.setImages(new ArrayList<>(List.of(img)));
+                    allSpots.add(spot);
+                });
+            } catch (Exception e) {
+                log.error("[GroqTripService] Lỗi load cafes: {}", e.getMessage());
+            }
+
+            // 3. Map Dishes (food)
+            try {
+                dishRepository.findAll().forEach(dish -> {
+                    // Chỉ thêm nếu có hình ảnh
+                    if (dish.getImageUrl() == null || dish.getImageUrl().isBlank()) {
+                        log.debug("[GroqTripService] Bỏ qua Dish {} - không có hình ảnh", dish.getDishName());
+                        return;
+                    }
+
+                    Spot spot = Spot.builder()
+                        .id(300000L + dish.getId())
+                        .nameVi(dish.getDishName() + " (" + dish.getRestaurantName() + ")")
+                        .nameEn(dish.getDishName() + " (" + dish.getRestaurantName() + ")")
+                        .category("food")
+                        .tags("món ăn, ẩm thực, đặc sản, nhà hàng")
+                        .latitude(dish.getLatitude() != null ? dish.getLatitude() : 15.8801)
+                        .longitude(dish.getLongitude() != null ? dish.getLongitude() : 108.3380)
+                        .minCost(dish.getMinPrice())
+                        .maxCost(dish.getMaxPrice())
+                        .averageCost(dish.getMinPrice() != null && dish.getMaxPrice() != null ? (dish.getMinPrice() + dish.getMaxPrice()) / 2 : 0)
+                        .estimatedDurationMinutes(45)
+                        .openingTime(dish.getOpeningTime() != null ? dish.getOpeningTime() : LocalTime.of(10, 0))
+                        .closingTime(dish.getClosingTime() != null ? dish.getClosingTime() : LocalTime.of(22, 0))
+                        .crowdLevel("medium")
+                        .rating(4.8)
+                        .suitableFor("couple, family, group, solo")
+                        .timeOfDay("morning, afternoon, evening")
+                        .descriptionVi("Món ngon đặc sản Hội An: " + dish.getDishName() + " tại " + dish.getRestaurantName() + ". Địa chỉ: " + dish.getAddress())
+                        .descriptionEn("Delicious Hoi An specialty: " + dish.getDishName() + " at " + dish.getRestaurantName() + ". Address: " + dish.getAddress())
+                        .build();
+
+                    SpotImage img = SpotImage.builder().imageUrl(dish.getImageUrl()).build();
+                    spot.setImages(new ArrayList<>(List.of(img)));
+                    allSpots.add(spot);
+                });
+            } catch (Exception e) {
+                log.error("[GroqTripService] Lỗi load dishes: {}", e.getMessage());
+            }
+
+            // 4. Map Entertainments (sightseeing)
+            try {
+                entertainmentRepository.findAll().forEach(ent -> {
+                    // Chỉ thêm nếu có hình ảnh
+                    if (ent.getImageUrl() == null || ent.getImageUrl().isBlank()) {
+                        log.debug("[GroqTripService] Bỏ qua Entertainment {} - không có hình ảnh", ent.getName());
+                        return;
+                    }
+
+                    Spot spot = Spot.builder()
+                        .id(400000L + ent.getId())
+                        .nameVi(ent.getName())
+                        .nameEn(ent.getName())
+                        .category("sightseeing")
+                        .tags("vui chơi, giải trí, tham quan, " + ent.getType() + ", " + (ent.getInterests() != null ? ent.getInterests() : ""))
+                        .latitude(ent.getLatitude() != null ? ent.getLatitude() : 15.8801)
+                        .longitude(ent.getLongitude() != null ? ent.getLongitude() : 108.3380)
+                        .minCost(ent.getMinPrice())
+                        .maxCost(ent.getMaxPrice())
+                        .averageCost(ent.getMinPrice() != null && ent.getMaxPrice() != null ? (ent.getMinPrice() + ent.getMaxPrice()) / 2 : 0)
+                        .estimatedDurationMinutes(120)
+                        .openingTime(LocalTime.of(8, 0))
+                        .closingTime(LocalTime.of(21, 0))
+                        .crowdLevel("medium")
+                        .rating(4.6)
+                        .suitableFor("couple, family, group, solo")
+                        .timeOfDay("morning, afternoon, evening")
+                        .descriptionVi("Địa điểm giải trí thú vị: " + ent.getName() + " (" + ent.getType() + "). Phù hợp cho sở thích: " + ent.getInterests() + ". Địa chỉ: " + ent.getAddress())
+                        .descriptionEn("Fun entertainment spot: " + ent.getName() + " (" + ent.getType() + "). Suitable for interests: " + ent.getInterests() + ". Address: " + ent.getAddress())
+                        .build();
+
+                    SpotImage img = SpotImage.builder().imageUrl(ent.getImageUrl()).build();
+                    spot.setImages(new ArrayList<>(List.of(img)));
+                    allSpots.add(spot);
+                });
+            } catch (Exception e) {
+                log.error("[GroqTripService] Lỗi load entertainments: {}", e.getMessage());
+            }
+
+            // 5. Map Rentals (rental)
+            try {
+                rentalRepository.findAll().forEach(rental -> {
+                    // Chỉ thêm nếu có hình ảnh
+                    if (rental.getImageUrl() == null || rental.getImageUrl().isBlank()) {
+                        log.debug("[GroqTripService] Bỏ qua Rental {} - không có hình ảnh", rental.getName());
+                        return;
+                    }
+
+                    Spot spot = Spot.builder()
+                        .id(500000L + rental.getId())
+                        .nameVi(rental.getName() + " (" + rental.getType() + ")")
+                        .nameEn(rental.getName() + " (" + rental.getType() + ")")
+                        .category("rental")
+                        .tags("dịch vụ, cho thuê, rental, " + rental.getType())
+                        .latitude(rental.getLatitude() != null ? rental.getLatitude() : 15.8801)
+                        .longitude(rental.getLongitude() != null ? rental.getLongitude() : 108.3380)
+                        .minCost(rental.getMinPrice())
+                        .maxCost(rental.getMaxPrice())
+                        .averageCost(rental.getMinPrice() != null && rental.getMaxPrice() != null ? (rental.getMinPrice() + rental.getMaxPrice()) / 2 : 0)
+                        .estimatedDurationMinutes(30)
+                        .openingTime(rental.getOpeningTime() != null ? rental.getOpeningTime() : LocalTime.of(8, 0))
+                        .closingTime(rental.getClosingTime() != null ? rental.getClosingTime() : LocalTime.of(21, 0))
+                        .crowdLevel("low")
+                        .rating(4.7)
+                        .suitableFor("couple, family, group, solo")
+                        .timeOfDay("morning, afternoon, evening")
+                        .descriptionVi("Dịch vụ cho thuê: " + rental.getName() + " chuyên cung cấp " + rental.getType() + ". Địa chỉ: " + rental.getAddress())
+                        .descriptionEn("Rental service: " + rental.getName() + " specializes in providing " + rental.getType() + ". Address: " + rental.getAddress())
+                        .build();
+
+                    SpotImage img = SpotImage.builder().imageUrl(rental.getImageUrl()).build();
+                    spot.setImages(new ArrayList<>(List.of(img)));
+                    allSpots.add(spot);
+                });
+            } catch (Exception e) {
+                log.error("[GroqTripService] Lỗi load rentals: {}", e.getMessage());
+            }
+
             if (allSpots.isEmpty()) {
-                throw new RuntimeException("Database spots trống. Vui lòng seed data trước!");
+                throw new RuntimeException("Database spots và các bảng liên quan trống. Vui lòng seed data trước!");
             }
 
             // 1. Build prompt
@@ -92,7 +298,7 @@ public class GroqTripService {
             m.put("id", s.getId());
             m.put("name_vi", s.getNameVi());
             m.put("name_en", s.getNameEn());
-            m.put("category", s.getCategory()); // sightseeing, food, cafe, stay
+            m.put("category", s.getCategory()); // sightseeing, food, cafe, stay, rental
             m.put("tags", s.getTags());
             m.put("rating", s.getRating());
             m.put("cost", s.getMaxCost() != null ? s.getMaxCost() : (s.getAverageCost() != null ? s.getAverageCost() : 0));
@@ -100,6 +306,8 @@ public class GroqTripService {
             m.put("suitable_for", s.getSuitableFor());
             m.put("time_of_day", s.getTimeOfDay()); // morning, afternoon, evening
             m.put("crowd", s.getCrowdLevel()); // low, medium, high
+            m.put("opening_time", s.getOpeningTime() != null ? s.getOpeningTime().toString() : "00:00");
+            m.put("closing_time", s.getClosingTime() != null ? s.getClosingTime().toString() : "23:59");
             m.put("desc_vi", s.getDescriptionVi() != null
                 ? s.getDescriptionVi().substring(0, Math.min(80, s.getDescriptionVi().length()))
                 : "");
@@ -120,6 +328,7 @@ public class GroqTripService {
         String groupType = request.getGroupType() != null ? request.getGroupType() : "couple";
         String interests = request.getInterests() != null
             ? String.join(", ", request.getInterests()) : "tham quan, ẩm thực";
+        String nowText = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
         // Slot thứ tự yêu cầu cho mỗi ngày
         String slotFormat = """
@@ -134,17 +343,17 @@ public class GroqTripService {
 
         return String.format("""
             Bạn là AI chuyên gia lập lịch trình du lịch Hội An, Việt Nam.
-
+ 
             THÔNG TIN CHUYẾN ĐI:
             - Số ngày: %d ngày
             - Ngân sách tổng: %,d VND cho %d người
             - Phong cách: %s
             - Sở thích cá nhân: %s
             - Loại nhóm: %s
-
+ 
             DANH SÁCH ĐỊA ĐIỂM TẠI HỘI AN (JSON):
             %s
-
+ 
             YÊU CẦU:
             Tạo lịch trình %d ngày hoàn chỉnh. Trả về JSON THUẦN TÚY (không markdown, không giải thích thêm) theo format:
             {
@@ -159,24 +368,28 @@ public class GroqTripService {
               "hotel_estimate": <ước tính lưu trú/đêm x số ngày>,
               "transport_estimate": <ước tính di chuyển>
             }
-
+ 
             NGUYÊN TẮC QUAN TRỌNG:
-            1. Chỉ dùng spot_id từ danh sách đã cung cấp, KHÔNG tự bịa spot mới
-            2. Ưu tiên spots phù hợp sở thích "%s" và phong cách "%s"
-            3. KHÔNG lặp lại cùng 1 spot trong nhiều ngày (ngoại trừ STAY)
-            4. Slot STAY dùng chung 1 khách sạn/homestay xuyên suốt (cùng spot_id)
-            5. Slot CAFE: chọn spot có category="cafe"
-            6. Slot LUNCH/MORNING/AFTERNOON: chọn spot phù hợp time_of_day
-            7. Slot EVENING: chọn spot có time_of_day chứa "evening"
-            8. Ước tính chi phí dựa trên trường "cost" của từng spot × số người
-            9. Tổng chi phí hoạt động không vượt quá %,d VND
-            10. Nếu người dùng thích "Biển" hay "Beach" → ưu tiên spot có tags chứa "beach", "sea", "biển"
+            1. Chỉ dùng spot_id từ danh sách đã cung cấp, KHÔNG tự bịa spot mới.
+            2. Ưu tiên spots phù hợp sở thích "%s" và phong cách "%s".
+            3. KHÔNG lặp lại cùng 1 spot trong nhiều ngày (ngoại trừ STAY).
+            4. Slot STAY dùng chung 1 khách sạn/homestay xuyên suốt (cùng spot_id có category="stay").
+            5. Slot CAFE: chọn spot có category="cafe".
+            6. Slot LUNCH/MORNING/AFTERNOON: chọn spot phù hợp với time_of_day. Có thể đan xen spot có category="rental" (dịch vụ cho thuê như thuê xe, thuê đồ cổ trang, máy ảnh) để tăng tính trải nghiệm.
+            7. Slot EVENING: chọn spot có time_of_day chứa "evening".
+            8. Ước tính chi phí dựa trên trường "cost" của từng spot × số người.
+            9. Tổng chi phí hoạt động không vượt quá %,d VND.
+            10. Nếu người dùng thích "Biển" hay "Beach" → ưu tiên spot có tags chứa "beach", "sea", "biển".
+            11. KHÔNG bao giờ xếp spot vào slot nếu nó đã đóng cửa hoặc không phù hợp khung giờ thực tế.
+            12. Nếu một điểm chỉ mở ban ngày thì không được gán vào tối muộn.
+            13. Mốc giờ hiện tại của hệ thống là %s (Asia/Ho_Chi_Minh). Hãy sinh lịch trình theo logic giờ mở cửa thực tế, không bịa giờ.
             """,
             days, budget, people, style, interests, groupType,
             spotsJson,
             days, slotFormat,
             interests, style,
-            budget
+            budget,
+            nowText
         );
     }
 
@@ -224,6 +437,7 @@ public class GroqTripService {
         // Build lookup map: id → Spot
         Map<Long, Spot> spotMap = allSpots.stream()
             .collect(Collectors.toMap(Spot::getId, s -> s));
+        Set<Long> usedSpotIds = new HashSet<>();
 
         JsonNode root = objectMapper.readTree(jsonStr);
 
@@ -237,13 +451,35 @@ public class GroqTripService {
 
             for (JsonNode slotNode : dayNode.path("spots")) {
                 String slot   = slotNode.path("slot").asText("MORNING");
-                String time   = slotNode.path("time").asText("");
+                String time   = normalizeSlotTime(slot);
                 long spotId   = slotNode.path("spot_id").asLong(-1);
 
                 Spot spot = spotMap.get(spotId);
                 if (spot == null) {
                     log.warn("[GroqTripService] Groq trả về spot_id={} không tồn tại, bỏ qua.", spotId);
                     continue;
+                }
+
+                if (!isSpotCompatibleWithSlot(spot, slot)) {
+                    Spot fallbackSpot = findFallbackSpot(allSpots, usedSpotIds, slot, spot.getCategory());
+                    if (fallbackSpot == null) {
+                        log.warn("[GroqTripService] Spot {} không hợp slot {} (giờ mở cửa không phù hợp), bỏ qua.", spot.getId(), slot);
+                        continue;
+                    }
+                    log.warn("[GroqTripService] Spot {} không hợp slot {}, thay bằng spot {}.", spot.getId(), slot, fallbackSpot.getId());
+                    spot = fallbackSpot;
+                }
+
+                if (!"STAY".equalsIgnoreCase(slot)) {
+                    if (usedSpotIds.contains(spot.getId())) {
+                        Spot fallbackSpot = findFallbackSpot(allSpots, usedSpotIds, slot, spot.getCategory());
+                        if (fallbackSpot == null) {
+                            log.warn("[GroqTripService] Spot {} đã dùng trước đó cho slot {}, bỏ qua.", spot.getId(), slot);
+                            continue;
+                        }
+                        spot = fallbackSpot;
+                    }
+                    usedSpotIds.add(spot.getId());
                 }
 
                 scheduledSpots.add(TripResponse.ScheduledSpot.builder()
@@ -290,5 +526,96 @@ public class GroqTripService {
             .transportEstimate(transportEst)
             .days(daySchedules)
             .build();
+    }
+
+    private String normalizeSlotTime(String slot) {
+        if (slot == null) return "";
+        return switch (slot.toUpperCase()) {
+            case "MORNING" -> "08:00 - 09:30 (Tham quan buổi sáng)";
+            case "CAFE", "CAFE_MORNING" -> "10:00 - 11:00 (Cà phê & Chill)";
+            case "LUNCH" -> "12:00 - 13:00 (Ăn trưa)";
+            case "AFTERNOON" -> "14:00 - 16:00 (Buổi chiều)";
+            case "EVENING" -> "18:00 - 20:00 (Buổi tối)";
+            case "STAY" -> "21:00 (Nghỉ ngơi)";
+            default -> "";
+        };
+    }
+
+    private boolean isSpotCompatibleWithSlot(Spot spot, String slot) {
+        if (spot == null || slot == null) return false;
+
+        if ("STAY".equalsIgnoreCase(slot)) {
+            return "stay".equalsIgnoreCase(spot.getCategory());
+        }
+
+        LocalTime slotStart = getSlotStartTime(slot);
+        if (slotStart != null && !isWithinOperatingHours(spot, slotStart)) {
+            return false;
+        }
+
+        String tod = spot.getTimeOfDay() != null ? spot.getTimeOfDay().toLowerCase() : "";
+        return switch (slot.toUpperCase()) {
+            case "MORNING" -> tod.isEmpty() || tod.contains("morning") || tod.contains("day") || tod.contains("all");
+            case "CAFE", "CAFE_MORNING" -> true;
+            case "LUNCH" -> tod.isEmpty() || tod.contains("morning") || tod.contains("afternoon") || tod.contains("lunch") || tod.contains("all");
+            case "AFTERNOON" -> tod.isEmpty() || tod.contains("afternoon") || tod.contains("day") || tod.contains("all");
+            case "EVENING" -> tod.isEmpty() || tod.contains("evening") || tod.contains("night") || tod.contains("all");
+            default -> true;
+        };
+    }
+
+    private boolean isWithinOperatingHours(Spot spot, LocalTime slotStart) {
+        if (spot == null || slotStart == null) return true;
+        LocalTime open = spot.getOpeningTime();
+        LocalTime close = spot.getClosingTime();
+        if (open == null || close == null) return true;
+        if (open.equals(close)) return true;
+        if (open.isBefore(close) || open.equals(close)) {
+            return !slotStart.isBefore(open) && !slotStart.isAfter(close);
+        }
+        // Overnight business hours (rare) – treat as open across midnight
+        return !slotStart.isBefore(open) || !slotStart.isAfter(close);
+    }
+
+    private LocalTime getSlotStartTime(String slot) {
+        if (slot == null) return null;
+        return switch (slot.toUpperCase()) {
+            case "MORNING" -> LocalTime.of(8, 0);
+            case "CAFE", "CAFE_MORNING" -> LocalTime.of(10, 0);
+            case "LUNCH" -> LocalTime.of(12, 0);
+            case "AFTERNOON" -> LocalTime.of(14, 0);
+            case "EVENING" -> LocalTime.of(18, 0);
+            case "STAY" -> LocalTime.of(21, 0);
+            default -> null;
+        };
+    }
+
+    private Spot findFallbackSpot(List<Spot> allSpots, Set<Long> usedSpotIds, String slot, String preferredCategory) {
+        if (allSpots == null || allSpots.isEmpty()) return null;
+        List<Spot> candidates = allSpots.stream()
+            .filter(s -> s != null && s.getId() != null)
+            .filter(s -> !usedSpotIds.contains(s.getId()))
+            .filter(s -> isSpotCompatibleWithSlot(s, slot))
+            .collect(Collectors.toList());
+
+        if (preferredCategory != null && !preferredCategory.isBlank()) {
+            for (Spot candidate : candidates) {
+                if (preferredCategory.equalsIgnoreCase(candidate.getCategory())) {
+                    return candidate;
+                }
+            }
+        }
+
+        if ("STAY".equalsIgnoreCase(slot)) {
+            return candidates.stream()
+                .filter(s -> "stay".equalsIgnoreCase(s.getCategory()))
+                .findFirst()
+                .orElse(null);
+        }
+
+        return candidates.stream()
+            .filter(s -> !"stay".equalsIgnoreCase(s.getCategory()))
+            .findFirst()
+            .orElseGet(() -> candidates.stream().findFirst().orElse(null));
     }
 }

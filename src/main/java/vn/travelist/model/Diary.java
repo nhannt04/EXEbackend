@@ -25,10 +25,6 @@ public class Diary {
     @Column(nullable = false)
     private String category; // 'healing', 'food', 'adventure', 'scenic'
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spot_id")
-    private Spot spot; // Địa điểm liên kết (Không bắt buộc)
-
     @Column(name = "content_vi", nullable = false, columnDefinition = "TEXT")
     private String contentVi;
 
