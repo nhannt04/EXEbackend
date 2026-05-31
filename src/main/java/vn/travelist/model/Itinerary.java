@@ -44,6 +44,9 @@ public class Itinerary {
     @Column(name = "trip_data", columnDefinition = "TEXT")
     private String tripData;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -55,6 +58,9 @@ public class Itinerary {
         }
         if (this.title == null) {
             this.title = "Lịch trình Hội An";
+        }
+        if (this.status == null) {
+            this.status = "NOT_STARTED";
         }
     }
 }

@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import vn.travelist.dto.ApiResponse;
 import vn.travelist.model.Rental;
 import vn.travelist.repository.RentalRepository;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/rentals")
@@ -30,6 +32,29 @@ public class RentalController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                 ApiResponse.error("Lấy danh sách dịch vụ cho thuê thất bại: " + e.getMessage(), "GET_RENTALS_FAILED")
+            );
+        }
+    }
+
+    @GetMapping("/operating/now")
+    public ResponseEntity<ApiResponse<List<Rental>>> getOperatingRentals() {
+        try {
+            LocalTime now = LocalTime.now();
+            List<Rental> allRentals = rentalRepository.findAll();
+
+            List<Rental> operatingRentals = allRentals.stream()
+                .filter(rental -> {
+                    if (rental.getOpeningTime() == null || rental.getClosingTime() == null) {
+                        return false; // Skip if no hours set
+                    }
+                    return !now.isBefore(rental.getOpeningTime()) && !now.isAfter(rental.getClosingTime());
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(ApiResponse.success(operatingRentals, "Lấy danh sách dịch vụ cho thuê đang mở cửa thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Lấy danh sách dịch vụ cho thuê đang mở cửa thất bại: " + e.getMessage(), "GET_OPERATING_RENTALS_FAILED")
             );
         }
     }

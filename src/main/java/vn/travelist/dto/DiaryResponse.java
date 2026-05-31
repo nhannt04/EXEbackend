@@ -23,6 +23,8 @@ public class DiaryResponse {
     private LocalDateTime createdAt;
     private AuthorInfo user;
     private List<CommentResponse> comments;
+    private Long spotId;
+    private vn.travelist.model.Spot spot;
 
     @Data
     @NoArgsConstructor

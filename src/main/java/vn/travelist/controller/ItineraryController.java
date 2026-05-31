@@ -59,6 +59,26 @@ public class ItineraryController {
         }
     }
 
+    @GetMapping("/completed")
+    public ResponseEntity<ApiResponse<List<ItineraryResponse>>> getCompletedItineraries(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = getUserIdFromHeader(authHeader);
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để xem lịch trình đã hoàn thành!", "UNAUTHORIZED")
+                );
+            }
+
+            List<ItineraryResponse> list = itineraryService.getCompletedItineraries(userId);
+            return ResponseEntity.ok(ApiResponse.success(list, "Lấy danh sách lịch trình đã hoàn thành thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Lấy danh sách lịch trình thất bại: " + e.getMessage(), "GET_COMPLETED_FAILED")
+            );
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteItinerary(
             @PathVariable Long id,
@@ -76,6 +96,28 @@ public class ItineraryController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                 ApiResponse.error("Xóa lịch trình thất bại: " + e.getMessage(), "DELETE_ITINERARY_FAILED")
+            );
+        }
+    }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<ItineraryResponse>> updateItineraryStatus(
+            @PathVariable Long id,
+            @RequestParam String status,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = getUserIdFromHeader(authHeader);
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để cập nhật trạng thái lịch trình!", "UNAUTHORIZED")
+                );
+            }
+
+            ItineraryResponse response = itineraryService.updateItineraryStatus(id, status, userId);
+            return ResponseEntity.ok(ApiResponse.success(response, "Cập nhật trạng thái lịch trình thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Cập nhật trạng thái thất bại: " + e.getMessage(), "UPDATE_STATUS_FAILED")
             );
         }
     }

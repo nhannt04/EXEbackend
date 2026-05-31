@@ -3,6 +3,8 @@ package vn.travelist.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "entertainments")
@@ -42,4 +44,15 @@ public class Entertainment {
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
+
+    @Column(name = "opening_time")
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime openingTime;
+
+    @Column(name = "closing_time")
+    @JsonFormat(pattern = "HH:mm")
+    private LocalTime closingTime;
+
+    @Column(name = "overnight", nullable = false)
+    private Boolean overnight = false;
 }

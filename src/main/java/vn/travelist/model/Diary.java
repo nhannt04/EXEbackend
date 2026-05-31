@@ -35,6 +35,10 @@ public class Diary {
     @Builder.Default
     private java.util.List<DiaryImage> images = new java.util.ArrayList<>();
 
+    // Optional reference to a Spot (virtual aggregated spots). Stored as FK to spots.id when available.
+    @Column(name = "spot_id")
+    private Long spotId;
+
     @Column(name = "likes_count")
     @Builder.Default
     private Integer likesCount = 0;

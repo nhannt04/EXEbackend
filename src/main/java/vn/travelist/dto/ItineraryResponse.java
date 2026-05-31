@@ -19,5 +19,6 @@ public class ItineraryResponse {
     private String travelStyle;
     private String groupType;
     private String tripData; // JSON serialized string
+    private String status;
     private LocalDateTime createdAt;
 }

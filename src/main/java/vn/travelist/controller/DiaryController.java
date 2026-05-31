@@ -37,11 +37,13 @@ public class DiaryController {
     public ResponseEntity<ApiResponse<DiaryResponse>> createDiary(
             @RequestParam Long userId,
             @RequestParam String category,
+            @RequestParam(required = false) Long spotId,
+            @RequestParam(required = false) Long itineraryId,
             @RequestParam String contentVi,
             @RequestParam String contentEn,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
-            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, null, image);
+            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, spotId, itineraryId, image);
             return ResponseEntity.ok(ApiResponse.success(response, "Đăng tải bài viết nhật ký du ký thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
@@ -112,6 +114,32 @@ public class DiaryController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
                 ApiResponse.error("Đăng bình luận thất bại: " + e.getMessage(), "ADD_COMMENT_FAILED")
+            );
+        }
+    }
+
+    @GetMapping("/posted-spots")
+    public ResponseEntity<ApiResponse<List<Long>>> getPostedSpotIds(
+            @RequestParam Long itineraryId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập!", "UNAUTHORIZED")
+                );
+            }
+            List<Long> postedSpotIds = diaryService.getPostedSpotIds(userId, itineraryId);
+            return ResponseEntity.ok(ApiResponse.success(postedSpotIds, "Lấy danh sách địa điểm đã đăng thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Lỗi khi lấy danh sách địa điểm đã đăng: " + e.getMessage(), "GET_POSTED_SPOTS_FAILED")
             );
         }
     }

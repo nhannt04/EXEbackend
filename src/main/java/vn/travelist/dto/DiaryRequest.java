@@ -13,6 +13,8 @@ import java.util.List;
 public class DiaryRequest {
     private Long userId;
     private String category;
+    private Long spotId;
+    private Long itineraryId;
     private String contentVi;
     private String contentEn;
     private List<ImageDto> images;

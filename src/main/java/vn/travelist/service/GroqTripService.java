@@ -45,19 +45,14 @@ public class GroqTripService {
     private final EntertainmentRepository entertainmentRepository;
     private final RentalRepository rentalRepository;
 
-    @Value("${groq.api-key:}")
-    private String groqApiKey;
+    @Value("${gemini.api-key:${GEMINI_API_KEY:}}")
+    private String geminiApiKey;
 
-    @Value("${groq.model:llama-3.3-70b-versatile}")
-    private String groqModel;
-
-    @Value("${groq.api-url:https://api.groq.com/openai/v1/chat/completions}")
-    private String groqApiUrl;
+    private final String geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
     public TripResponse generateItinerary(TripRequest request) {
-        // Nếu chưa có API key → dùng rule-based
-        if (groqApiKey == null || groqApiKey.isBlank() || groqApiKey.equals("your_groq_api_key_here")) {
-            log.warn("[GroqTripService] GROQ_API_KEY chưa được cấu hình. Chuyển sang rule-based fallback.");
+        if (geminiApiKey == null || geminiApiKey.isBlank()) {
+            log.warn("[GroqTripService] GEMINI_API_KEY chưa được cấu hình. Chuyển sang rule-based fallback.");
             return fallbackTripService.generateItinerary(request);
         }
 
@@ -263,23 +258,111 @@ public class GroqTripService {
                 throw new RuntimeException("Database spots và các bảng liên quan trống. Vui lòng seed data trước!");
             }
 
+            // Tối ưu hóa số lượng spots truyền vào Prompt theo độ khớp sở thích & phong cách của user
+            List<Spot> optimizedSpots = new ArrayList<>();
+            try {
+                final String interestsStr = request.getInterests() != null ? String.join(" ", request.getInterests()).toLowerCase() : "";
+                final String styleStr = request.getStyle() != null ? request.getStyle().toLowerCase() : "";
+
+                // Bộ tính điểm mức độ phù hợp sở thích & phong cách
+                java.util.function.Function<Spot, Double> getScore = (s) -> {
+                    double score = 0.0;
+                    if (s == null) return score;
+
+                    String name = (s.getNameVi() != null ? s.getNameVi() : "").toLowerCase();
+                    String tags = (s.getTags() != null ? s.getTags() : "").toLowerCase();
+                    String desc = (s.getDescriptionVi() != null ? s.getDescriptionVi() : "").toLowerCase();
+
+                    // Khớp sở thích cá nhân
+                    if (!interestsStr.isEmpty()) {
+                        String[] keywords = interestsStr.split("[,\\s\\.\\-\\+]+");
+                        for (String kw : keywords) {
+                            if (kw.length() > 1) { // từ dài hơn 1 ký tự
+                                if (name.contains(kw)) score += 20.0;
+                                if (tags.contains(kw)) score += 10.0;
+                                if (desc.contains(kw)) score += 5.0;
+                            }
+                        }
+                    }
+
+                    // Khớp phong cách chuyến đi
+                    if (!styleStr.isEmpty()) {
+                        String[] styleWords = styleStr.split("[,\\s]+");
+                        for (String sw : styleWords) {
+                            if (sw.length() > 2) {
+                                if (tags.contains(sw) || desc.contains(sw) || name.contains(sw)) {
+                                    score += 8.0;
+                                }
+                            }
+                        }
+                    }
+
+                    // Ưu tiên rating làm tie-breaker phụ
+                    score += (s.getRating() != null ? s.getRating() : 0.0) * 0.1;
+                    return score;
+                };
+
+                List<Spot> stays = allSpots.stream()
+                    .filter(s -> "stay".equalsIgnoreCase(s.getCategory()))
+                    .sorted((a, b) -> Double.compare(getScore.apply(b), getScore.apply(a)))
+                    .limit(5)
+                    .collect(Collectors.toList());
+
+                List<Spot> cafes = allSpots.stream()
+                    .filter(s -> "cafe".equalsIgnoreCase(s.getCategory()))
+                    .sorted((a, b) -> Double.compare(getScore.apply(b), getScore.apply(a)))
+                    .limit(8)
+                    .collect(Collectors.toList());
+
+                List<Spot> foods = allSpots.stream()
+                    .filter(s -> "food".equalsIgnoreCase(s.getCategory()))
+                    .sorted((a, b) -> Double.compare(getScore.apply(b), getScore.apply(a)))
+                    .limit(10)
+                    .collect(Collectors.toList());
+
+                List<Spot> sightseeings = allSpots.stream()
+                    .filter(s -> "sightseeing".equalsIgnoreCase(s.getCategory()))
+                    .sorted((a, b) -> Double.compare(getScore.apply(b), getScore.apply(a)))
+                    .limit(12)
+                    .collect(Collectors.toList());
+
+                List<Spot> rentals = allSpots.stream()
+                    .filter(s -> "rental".equalsIgnoreCase(s.getCategory()))
+                    .sorted((a, b) -> Double.compare(getScore.apply(b), getScore.apply(a)))
+                    .limit(4)
+                    .collect(Collectors.toList());
+
+                optimizedSpots.addAll(stays);
+                optimizedSpots.addAll(cafes);
+                optimizedSpots.addAll(foods);
+                optimizedSpots.addAll(sightseeings);
+                // Tuyệt đối KHÔNG đưa dịch vụ cho thuê (rental) vào danh sách gửi cho AI lên lịch trình chính
+                // optimizedSpots.addAll(rentals);
+            } catch (Exception ex) {
+                log.warn("[GroqTripService] Lỗi khi tối ưu hóa danh sách spots: {}", ex.getMessage());
+            }
+
+            if (optimizedSpots.isEmpty()) {
+                optimizedSpots = allSpots;
+            }
+
             // 1. Build prompt
-            String prompt = buildPrompt(request, allSpots);
-            log.info("[GroqTripService] Gửi yêu cầu Groq AI cho lịch trình {} ngày, phong cách: {}",
+            String prompt = buildPrompt(request, optimizedSpots);
+            log.info("[GroqTripService] Gửi yêu cầu Gemini AI cho lịch trình {} ngày, phong cách: {}",
                 request.getDays(), request.getStyle());
 
-            // 2. Gọi Groq API
-            String jsonResponse = callGroqApi(prompt);
+            // 2. Gọi Gemini API
+            String jsonResponse = callGeminiApi(prompt);
 
             // 3. Parse JSON response → TripResponse
             TripResponse result = parseGroqResponse(jsonResponse, allSpots, request);
             result.setAiPowered(true);
-            result.setAiEngine("Groq " + groqModel);
+            result.setAiEngine("Gemini 2.5 Flash");
             log.info("[GroqTripService] Sinh lịch trình AI thành công!");
             return result;
 
         } catch (Exception e) {
-            log.error("[GroqTripService] Lỗi khi gọi Groq API: {}. Chuyển sang rule-based fallback.", e.getMessage());
+            log.error("[GroqTripService] Lỗi khi gọi Gemini API: {}. Chuyển sang rule-based fallback.", e.getMessage());
             TripResponse fallback = fallbackTripService.generateItinerary(request);
             fallback.setAiPowered(false);
             fallback.setAiEngine("Rule-based Scoring");
@@ -328,17 +411,21 @@ public class GroqTripService {
         String groupType = request.getGroupType() != null ? request.getGroupType() : "couple";
         String interests = request.getInterests() != null
             ? String.join(", ", request.getInterests()) : "tham quan, ẩm thực";
+        log.info("[GroqTripService] Lập lịch trình với sở thích cá nhân gửi đến AI: \"{}\"", interests);
         String nowText = LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 
         // Slot thứ tự yêu cầu cho mỗi ngày
         String slotFormat = """
             [
-              {"slot": "MORNING",   "time": "08:00 - 09:30 (Tham quan buổi sáng)", "spot_id": <id>},
-              {"slot": "CAFE",      "time": "10:00 - 11:00 (Cà phê & Chill)",       "spot_id": <id>},
-              {"slot": "LUNCH",     "time": "12:00 - 13:00 (Ăn trưa)",             "spot_id": <id>},
-              {"slot": "AFTERNOON", "time": "14:00 - 16:00 (Buổi chiều)",           "spot_id": <id>},
-              {"slot": "EVENING",   "time": "18:00 - 20:00 (Buổi tối)",            "spot_id": <id>},
-              {"slot": "STAY",      "time": "21:00 (Nghỉ ngơi)",                   "spot_id": <id>}
+              {"slot": "BREAKFAST",      "time": "07:00 - 07:30 (Ăn sáng)",             "spot_id": <id>},
+              {"slot": "MORNING",        "time": "08:00 - 11:00 (Tham quan sáng)",      "spot_id": <id>},
+              {"slot": "LUNCH",          "time": "11:30 - 12:30 (Ăn trưa)",             "spot_id": <id>},
+              {"slot": "AFTERNOON",      "time": "13:00 - 14:45 (Tham quan chiều)",     "spot_id": <id>},
+              {"slot": "AFTERNOON_TEA",  "time": "15:00 - 15:30 (Ăn xế)",               "spot_id": <id>},
+              {"slot": "LATE_AFTERNOON", "time": "16:00 - 18:00 (Vui chơi chiều muộn)", "spot_id": <id>},
+              {"slot": "DINNER",         "time": "18:30 - 19:00 (Ăn tối)",              "spot_id": <id>},
+              {"slot": "EVENING",        "time": "19:30 - 21:30 (Vui chơi tối)",        "spot_id": <id>},
+              {"slot": "STAY",           "time": "22:00 (Nghỉ ngơi)",                   "spot_id": <id>}
             ]""";
 
         return String.format("""
@@ -347,8 +434,8 @@ public class GroqTripService {
             THÔNG TIN CHUYẾN ĐI:
             - Số ngày: %d ngày
             - Ngân sách tổng: %,d VND cho %d người
-            - Phong cách: %s
-            - Sở thích cá nhân: %s
+            - Phong cách: %s (Một trong ba: Chill & Thư giãn, Sống ảo, Trải nghiệm)
+            - Sở thích cá nhân (Ăn gì, uống gì, đi đâu): %s
             - Loại nhóm: %s
  
             DANH SÁCH ĐỊA ĐIỂM TẠI HỘI AN (JSON):
@@ -371,18 +458,19 @@ public class GroqTripService {
  
             NGUYÊN TẮC QUAN TRỌNG:
             1. Chỉ dùng spot_id từ danh sách đã cung cấp, KHÔNG tự bịa spot mới.
-            2. Ưu tiên spots phù hợp sở thích "%s" và phong cách "%s".
+            2. Ưu tiên spots phù hợp nhất với sở thích tự do "%s" và phong cách "%s" của người dùng. Hãy hoạt động như một công cụ tìm kiếm thông minh kết hợp cơ sở dữ liệu cung cấp và kiến thức internet của bạn để lựa chọn địa điểm hoàn hảo khớp với mô tả của người dùng.
             3. KHÔNG lặp lại cùng 1 spot trong nhiều ngày (ngoại trừ STAY).
             4. Slot STAY dùng chung 1 khách sạn/homestay xuyên suốt (cùng spot_id có category="stay").
-            5. Slot CAFE: chọn spot có category="cafe".
-            6. Slot LUNCH/MORNING/AFTERNOON: chọn spot phù hợp với time_of_day. Có thể đan xen spot có category="rental" (dịch vụ cho thuê như thuê xe, thuê đồ cổ trang, máy ảnh) để tăng tính trải nghiệm.
-            7. Slot EVENING: chọn spot có time_of_day chứa "evening".
-            8. Ước tính chi phí dựa trên trường "cost" của từng spot × số người.
-            9. Tổng chi phí hoạt động không vượt quá %,d VND.
-            10. Nếu người dùng thích "Biển" hay "Beach" → ưu tiên spot có tags chứa "beach", "sea", "biển".
-            11. KHÔNG bao giờ xếp spot vào slot nếu nó đã đóng cửa hoặc không phù hợp khung giờ thực tế.
-            12. Nếu một điểm chỉ mở ban ngày thì không được gán vào tối muộn.
-            13. Mốc giờ hiện tại của hệ thống là %s (Asia/Ho_Chi_Minh). Hãy sinh lịch trình theo logic giờ mở cửa thực tế, không bịa giờ.
+            5. Slot BREAKFAST: chọn spot có category="food" phù hợp ăn sáng hoặc các món đặc sản ăn sáng (bánh mỳ, mì quảng...).
+            6. Slot LUNCH: chọn spot có category="food" phù hợp ăn trưa.
+            7. Slot AFTERNOON_TEA: chọn spot có category="cafe" (cà phê & ăn nhẹ chiều).
+            8. Slot DINNER: chọn spot có category="food" phù hợp ăn tối.
+            9. Slot MORNING/AFTERNOON/EVENING: chọn spot có category="sightseeing" phù hợp khung giờ để tham quan, giải trí. Tuyệt đối KHÔNG xếp các dịch vụ cho thuê xe/cho thuê đồ (category="rental") vào các slot lịch trình chính này.
+            10. Ước tính chi phí dựa trên trường "cost" của từng spot × số người.
+            11. Tổng chi phí hoạt động không vượt quá %,d VND.
+            12. Nếu người dùng thích "Biển" hay "Beach" → ưu tiên spot có tags chứa "beach", "sea", "biển".
+            13. KHÔNG bao giờ xếp spot vào slot nếu nó đã đóng cửa hoặc không phù hợp khung giờ thực tế.
+            14. Mốc giờ hiện tại của hệ thống là %s (Asia/Ho_Chi_Minh). Hãy sinh lịch trình theo logic giờ mở cửa thực tế, không bịa giờ.
             """,
             days, budget, people, style, interests, groupType,
             spotsJson,
@@ -394,38 +482,42 @@ public class GroqTripService {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CALL GROQ API
+    // CALL GEMINI API
     // ─────────────────────────────────────────────────────────────────────────
 
-    private String callGroqApi(String userPrompt) {
+    private String callGeminiApi(String userPrompt) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(groqApiKey);
+        headers.set("X-goog-api-key", geminiApiKey);
+
+        Map<String, Object> part = Map.of("text", userPrompt);
+        Map<String, Object> content = Map.of("parts", List.of(part));
+        
+        Map<String, Object> generationConfig = Map.of("responseMimeType", "application/json");
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("model", groqModel);
-        body.put("temperature", 0.3); // Thấp → JSON ổn định hơn
-        body.put("max_tokens", 4096);
-        body.put("response_format", Map.of("type", "json_object")); // Force JSON output
-
-        body.put("messages", List.of(
-            Map.of("role", "system",
-                   "content", "Bạn là AI chuyên gia du lịch Hội An. Luôn trả về JSON hợp lệ, không markdown."),
-            Map.of("role", "user", "content", userPrompt)
-        ));
+        body.put("contents", List.of(content));
+        body.put("generationConfig", generationConfig);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(groqApiUrl, entity, String.class);
+
+        // Tạo RestTemplate cục bộ với timeout cao để chắc chắn không bị ảnh hưởng bởi context hot-swap hoặc bean config khác
+        org.springframework.http.client.SimpleClientHttpRequestFactory requestFactory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(20000); // 20s
+        requestFactory.setReadTimeout(120000);  // 120s
+        RestTemplate localRestTemplate = new RestTemplate(requestFactory);
+
+        ResponseEntity<String> response = localRestTemplate.postForEntity(geminiApiUrl, entity, String.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Groq API trả về lỗi: " + response.getStatusCode());
+            throw new RuntimeException("Gemini API trả về lỗi: " + response.getStatusCode());
         }
 
         try {
             JsonNode root = objectMapper.readTree(response.getBody());
-            return root.path("choices").get(0).path("message").path("content").asText();
+            return root.path("candidates").get(0).path("content").path("parts").get(0).path("text").asText();
         } catch (Exception e) {
-            throw new RuntimeException("Không thể parse Groq API response: " + e.getMessage());
+            throw new RuntimeException("Không thể parse Gemini API response: " + e.getMessage());
         }
     }
 
@@ -531,18 +623,26 @@ public class GroqTripService {
     private String normalizeSlotTime(String slot) {
         if (slot == null) return "";
         return switch (slot.toUpperCase()) {
-            case "MORNING" -> "08:00 - 09:30 (Tham quan buổi sáng)";
-            case "CAFE", "CAFE_MORNING" -> "10:00 - 11:00 (Cà phê & Chill)";
-            case "LUNCH" -> "12:00 - 13:00 (Ăn trưa)";
-            case "AFTERNOON" -> "14:00 - 16:00 (Buổi chiều)";
-            case "EVENING" -> "18:00 - 20:00 (Buổi tối)";
-            case "STAY" -> "21:00 (Nghỉ ngơi)";
+            case "BREAKFAST" -> "07:00 - 07:30 (Ăn sáng)";
+            case "MORNING" -> "08:00 - 11:00 (Tham quan sáng)";
+            case "LUNCH" -> "11:30 - 12:30 (Ăn trưa)";
+            case "AFTERNOON" -> "13:00 - 14:45 (Tham quan chiều)";
+            case "AFTERNOON_TEA", "CAFE" -> "15:00 - 15:30 (Ăn xế)";
+            case "LATE_AFTERNOON" -> "16:00 - 18:00 (Vui chơi chiều muộn)";
+            case "DINNER" -> "18:30 - 19:00 (Ăn tối)";
+            case "EVENING" -> "19:30 - 21:30 (Vui chơi tối)";
+            case "STAY" -> "22:00 (Nghỉ ngơi)";
             default -> "";
         };
     }
 
     private boolean isSpotCompatibleWithSlot(Spot spot, String slot) {
         if (spot == null || slot == null) return false;
+
+        // Bỏ hoàn toàn các spot thuộc nhóm dịch vụ cho thuê (rental) khỏi các slot lịch trình chính
+        if ("rental".equalsIgnoreCase(spot.getCategory())) {
+            return false;
+        }
 
         if ("STAY".equalsIgnoreCase(slot)) {
             return "stay".equalsIgnoreCase(spot.getCategory());
@@ -555,10 +655,12 @@ public class GroqTripService {
 
         String tod = spot.getTimeOfDay() != null ? spot.getTimeOfDay().toLowerCase() : "";
         return switch (slot.toUpperCase()) {
+            case "BREAKFAST" -> "food".equalsIgnoreCase(spot.getCategory());
             case "MORNING" -> tod.isEmpty() || tod.contains("morning") || tod.contains("day") || tod.contains("all");
-            case "CAFE", "CAFE_MORNING" -> true;
-            case "LUNCH" -> tod.isEmpty() || tod.contains("morning") || tod.contains("afternoon") || tod.contains("lunch") || tod.contains("all");
+            case "LUNCH" -> "food".equalsIgnoreCase(spot.getCategory());
             case "AFTERNOON" -> tod.isEmpty() || tod.contains("afternoon") || tod.contains("day") || tod.contains("all");
+            case "AFTERNOON_TEA", "CAFE" -> "cafe".equalsIgnoreCase(spot.getCategory());
+            case "DINNER" -> "food".equalsIgnoreCase(spot.getCategory());
             case "EVENING" -> tod.isEmpty() || tod.contains("evening") || tod.contains("night") || tod.contains("all");
             default -> true;
         };
@@ -580,12 +682,15 @@ public class GroqTripService {
     private LocalTime getSlotStartTime(String slot) {
         if (slot == null) return null;
         return switch (slot.toUpperCase()) {
+            case "BREAKFAST" -> LocalTime.of(7, 0);
             case "MORNING" -> LocalTime.of(8, 0);
-            case "CAFE", "CAFE_MORNING" -> LocalTime.of(10, 0);
-            case "LUNCH" -> LocalTime.of(12, 0);
-            case "AFTERNOON" -> LocalTime.of(14, 0);
-            case "EVENING" -> LocalTime.of(18, 0);
-            case "STAY" -> LocalTime.of(21, 0);
+            case "LUNCH" -> LocalTime.of(11, 30);
+            case "AFTERNOON" -> LocalTime.of(13, 0);
+            case "AFTERNOON_TEA", "CAFE" -> LocalTime.of(15, 0);
+            case "LATE_AFTERNOON" -> LocalTime.of(16, 0);
+            case "DINNER" -> LocalTime.of(18, 30);
+            case "EVENING" -> LocalTime.of(19, 30);
+            case "STAY" -> LocalTime.of(22, 0);
             default -> null;
         };
     }

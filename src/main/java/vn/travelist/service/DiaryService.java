@@ -13,6 +13,7 @@ import vn.travelist.model.DiaryImage;
 import vn.travelist.model.User;
 import vn.travelist.repository.CommentRepository;
 import vn.travelist.repository.DiaryRepository;
+import vn.travelist.repository.ItineraryRepository;
 import vn.travelist.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,8 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final ItineraryRepository itineraryRepository;
+    private final SpotService spotService;
     private final CloudflareImageService cloudflareImageService;
 
     /**
@@ -49,9 +52,17 @@ public class DiaryService {
      * Tạo bài viết nhật ký du ký mới kèm tệp ảnh upload lên Cloudflare (Fallback cho Multipart)
      */
     @Transactional
-    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, MultipartFile imageFile) {
+    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, Long itineraryId, MultipartFile imageFile) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
+
+        // Kiểm tra ràng buộc: mỗi địa điểm trong một lịch trình chỉ được đăng 1 lần
+        if (spotId != null && itineraryId != null) {
+            boolean alreadyPosted = diaryRepository.existsByUserIdAndSpotIdAndItineraryId(userId, spotId, itineraryId);
+            if (alreadyPosted) {
+                throw new RuntimeException("Địa điểm này đã được đăng trong lịch trình này. Hãy hoàn thành một lịch trình khác để đăng lại!");
+            }
+        }
 
         String imageCfId = null;
         String imageUrl = null;
@@ -71,6 +82,8 @@ public class DiaryService {
                 .category(category)
                 .contentVi(contentVi)
                 .contentEn(contentEn)
+                .spotId(spotId)
+                .itineraryId(itineraryId)
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
@@ -95,11 +108,22 @@ public class DiaryService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
 
+        // Kiểm tra ràng buộc: mỗi địa điểm trong một lịch trình chỉ được đăng 1 lần
+        if (request.getSpotId() != null && request.getItineraryId() != null) {
+            boolean alreadyPosted = diaryRepository.existsByUserIdAndSpotIdAndItineraryId(
+                    request.getUserId(), request.getSpotId(), request.getItineraryId());
+            if (alreadyPosted) {
+                throw new RuntimeException("Địa điểm này đã được đăng trong lịch trình này. Hãy hoàn thành một lịch trình khác để đăng lại!");
+            }
+        }
+
         Diary diary = Diary.builder()
                 .user(user)
                 .category(request.getCategory())
                 .contentVi(request.getContentVi())
                 .contentEn(request.getContentEn())
+                .spotId(request.getSpotId())
+                .itineraryId(request.getItineraryId())
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
@@ -116,6 +140,18 @@ public class DiaryService {
 
         Diary savedDiary = diaryRepository.save(diary);
         return convertToDiaryResponse(savedDiary);
+    }
+
+    /**
+     * Lấy danh sách spotId đã được đăng bởi user trong một itinerary cụ thể
+     */
+    @Transactional(readOnly = true)
+    public List<Long> getPostedSpotIds(Long userId, Long itineraryId) {
+        return diaryRepository.findByUserIdAndItineraryId(userId, itineraryId)
+                .stream()
+                .filter(d -> d.getSpotId() != null)
+                .map(Diary::getSpotId)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -205,7 +241,16 @@ public class DiaryService {
             legacyImageUrl = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80";
         }
 
-        return DiaryResponse.builder()
+        vn.travelist.model.Spot spot = null;
+        if (diary.getSpotId() != null) {
+            try {
+                spot = spotService.getSpotById(diary.getSpotId());
+            } catch (Exception e) {
+                // ignore if spot cannot be resolved
+            }
+        }
+
+        DiaryResponse.DiaryResponseBuilder builder = DiaryResponse.builder()
                 .id(diary.getId())
                 .category(diary.getCategory())
                 .contentVi(diary.getContentVi())
@@ -223,6 +268,9 @@ public class DiaryService {
                         .avatarUrl(diary.getUser().getAvatarUrl())
                         .build())
                 .comments(commentResponses)
-                .build();
+                .spotId(diary.getSpotId())
+                .spot(spot);
+
+        return builder.build();
     }
 }
