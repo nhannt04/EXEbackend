@@ -1,19 +1,14 @@
 package vn.travelist.config;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import vn.travelist.model.*;
 import vn.travelist.repository.*;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -21,53 +16,14 @@ import java.util.List;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
-    private final SpotRepository spotRepository;
     private final ExpertRepository expertRepository;
     private final ExpertInquiryRepository expertInquiryRepository;
     private final DiaryRepository diaryRepository;
     private final CommentRepository commentRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // 1. Nạp địa điểm du lịch (Spots) trước tiên
-        long spotCount = spotRepository.count();
-        if (spotCount <= 5) {
-            if (spotCount > 0) {
-                log.info("[DataInitializer] Phát hiện {} địa điểm cũ/mẫu. Đang làm sạch bảng spots để nâng cấp lên 50 địa điểm chất lượng cao...", spotCount);
-                spotRepository.deleteAll();
-            }
-            log.info("[DataInitializer] Đang nạp dữ liệu địa điểm du lịch Hội An từ spots_seed.json...");
-            try (InputStream inputStream = new ClassPathResource("spots_seed.json").getInputStream()) {
-                List<Spot> spots = objectMapper.readValue(inputStream, new TypeReference<List<Spot>>() {});
-                for (Spot spot : spots) {
-                    if (spot.getImages() != null) {
-                        for (SpotImage img : spot.getImages()) {
-                            img.setSpot(spot);
-                        }
-                    }
-                    if (spot.getMinCost() == null || spot.getMinCost() == 0) {
-                        int avg = spot.getAverageCost() != null ? spot.getAverageCost() : 0;
-                        if (avg == 0) {
-                            spot.setMinCost(0);
-                            spot.setMaxCost(0);
-                        } else {
-                            spot.setMinCost((int) Math.round(avg * 0.8 / 1000.0) * 1000);
-                            spot.setMaxCost((int) Math.round(avg * 1.2 / 1000.0) * 1000);
-                        }
-                    }
-                }
-                spotRepository.saveAll(spots);
-                log.info("[DataInitializer] Nạp dữ liệu hoàn tất! Đã lưu thành công {} địa điểm cùng ảnh mẫu.", spots.size());
-            } catch (Exception e) {
-                log.error("[DataInitializer] Lỗi khi nạp spots từ JSON: {}", e.getMessage(), e);
-            }
-        } else {
-            log.info("[DataInitializer] Cơ sở dữ liệu đã có sẵn {} địa điểm du lịch.", spotCount);
-        }
-
-        // 2. Nạp Người dùng (Users), Chuyên gia (Experts), Nhật ký (Diaries) & Hỏi đáp
         long userCount = userRepository.count();
         if (userCount == 0) {
             log.info("[DataInitializer] Cơ sở dữ liệu trống người dùng. Tiến hành nạp tài khoản mẫu hệ thống...");
@@ -116,23 +72,11 @@ public class DataInitializer implements CommandLineRunner {
             expertInquiryRepository.save(inquiry);
             log.info("[DataInitializer] Đã nạp thành công dữ liệu mẫu Chuyên gia & Hỏi đáp trực tuyến.");
 
-            // Tìm các spot vừa tạo để liên kết bài viết nhật ký cộng đồng
-            Spot chuaCau = spotRepository.findAll().stream()
-                    .filter(s -> s.getNameEn().toLowerCase().contains("japanese covered bridge"))
-                    .findFirst()
-                    .orElse(null);
-
-            Spot faifoCoffee = spotRepository.findAll().stream()
-                    .filter(s -> s.getNameEn().toLowerCase().contains("faifo coffee rooftop"))
-                    .findFirst()
-                    .orElse(null);
-
             // Tạo bài viết nhật ký mẫu của Nguyễn Du Khách
             log.info("[DataInitializer] Đang nạp bài viết nhật ký mẫu của du khách...");
             Diary diary1 = Diary.builder()
                     .user(traveler)
                     .category("sightseeing")
-                    .spot(chuaCau)
                     .contentVi("Một buổi sáng bình yên đi dạo quanh phố cổ Hội An, ngắm nhìn Chùa Cầu Nhật Bản cổ kính rêu phong dưới nắng mai rực rỡ. Mọi phiền muộn dường như tan biến!")
                     .contentEn("A peaceful morning walking around Hoi An ancient town, watching the historic Japanese Covered Bridge under the sparkling morning sunlight. All worries seem to fade away!")
                     .likesCount(42)
@@ -150,7 +94,6 @@ public class DataInitializer implements CommandLineRunner {
             Diary diary2 = Diary.builder()
                     .user(admin)
                     .category("food")
-                    .spot(faifoCoffee)
                     .contentVi("Góc nhìn từ sân thượng Faifo Coffee chưa bao giờ làm mình thất vọng. Nhâm nhi tách cafe cốt dừa mát lạnh và ngắm những mái ngói rêu phong cổ kính thật tuyệt vời!")
                     .contentEn("The view from Faifo Coffee rooftop never disappoints. Sipping a cold coconut coffee and watching the mossy ancient tiled roofs is absolutely wonderful!")
                     .likesCount(28)

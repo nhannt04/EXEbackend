@@ -10,11 +10,9 @@ import vn.travelist.dto.DiaryResponse;
 import vn.travelist.model.Comment;
 import vn.travelist.model.Diary;
 import vn.travelist.model.DiaryImage;
-import vn.travelist.model.Spot;
 import vn.travelist.model.User;
 import vn.travelist.repository.CommentRepository;
 import vn.travelist.repository.DiaryRepository;
-import vn.travelist.repository.SpotRepository;
 import vn.travelist.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +26,10 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
-    private final SpotRepository spotRepository;
     private final CloudflareImageService cloudflareImageService;
 
     /**
-     * Lấy toàn bộ nhật ký (có thể lọc theo chuyên mục) kèm tác giả, địa điểm và danh sách bình luận
+     * Lấy toàn bộ nhật ký (có thể lọc theo chuyên mục) kèm tác giả và danh sách bình luận
      */
     @Transactional(readOnly = true)
     public List<DiaryResponse> getAllDiaries(String category) {
@@ -56,11 +53,6 @@ public class DiaryService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
 
-        Spot spot = null;
-        if (spotId != null) {
-            spot = spotRepository.findById(spotId).orElse(null);
-        }
-
         String imageCfId = null;
         String imageUrl = null;
 
@@ -80,10 +72,6 @@ public class DiaryService {
                 .contentVi(contentVi)
                 .contentEn(contentEn)
                 .build();
-        
-        if (spot != null) {
-            diary.setSpot(spot);
-        }
 
         List<DiaryImage> diaryImages = new ArrayList<>();
         if (imageUrl != null) {
@@ -107,17 +95,11 @@ public class DiaryService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
 
-        Spot spot = null;
-        if (request.getSpotId() != null) {
-            spot = spotRepository.findById(request.getSpotId()).orElse(null);
-        }
-
         Diary diary = Diary.builder()
                 .user(user)
                 .category(request.getCategory())
                 .contentVi(request.getContentVi())
                 .contentEn(request.getContentEn())
-                .spot(spot)
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
@@ -233,7 +215,6 @@ public class DiaryService {
                 .images(diary.getImages())
                 .likesCount(diary.getLikesCount())
                 .createdAt(diary.getCreatedAt())
-                .spot(diary.getSpot())
                 .user(DiaryResponse.AuthorInfo.builder()
                         .id(diary.getUser().getId())
                         .fullName(diary.getUser().getFullName())

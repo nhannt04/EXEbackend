@@ -39,10 +39,9 @@ public class DiaryController {
             @RequestParam String category,
             @RequestParam String contentVi,
             @RequestParam String contentEn,
-            @RequestParam(required = false) Long spotId,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         try {
-            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, spotId, image);
+            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, null, image);
             return ResponseEntity.ok(ApiResponse.success(response, "Đăng tải bài viết nhật ký du ký thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
