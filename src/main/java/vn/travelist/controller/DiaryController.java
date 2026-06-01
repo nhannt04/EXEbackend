@@ -22,9 +22,18 @@ public class DiaryController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<DiaryResponse>>> getAllDiaries(
-            @RequestParam(required = false) String category) {
+            @RequestParam(required = false) String category,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
-            List<DiaryResponse> diaries = diaryService.getAllDiaries(category);
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+
+            List<DiaryResponse> diaries = diaryService.getAllDiaries(category, userId);
             return ResponseEntity.ok(ApiResponse.success(diaries, "Lấy danh sách nhật ký du ký thành công!"));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
@@ -68,6 +77,7 @@ public class DiaryController {
     @PostMapping("/{id}/like")
     public ResponseEntity<ApiResponse<Void>> likeDiary(
             @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "LIKE") String type,
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
             Long userId = null;
@@ -84,13 +94,14 @@ public class DiaryController {
                 );
             }
 
-            diaryService.toggleLike(id, userId);
-            return ResponseEntity.ok(ApiResponse.success(null, "Thả tim bài viết thành công!"));
+            diaryService.toggleLike(id, userId, type);
+            return ResponseEntity.ok(ApiResponse.success(null, "Thao tác tương tác bài viết thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(
-                ApiResponse.error("Không thể thả tim bài viết: " + e.getMessage(), "LIKE_DIARY_FAILED")
+                ApiResponse.error("Không thể tương tác bài viết: " + e.getMessage(), "LIKE_DIARY_FAILED")
             );
         }
+
     }
 
     @PostMapping("/{id}/comments")
@@ -117,6 +128,34 @@ public class DiaryController {
             );
         }
     }
+
+    @DeleteMapping("/{diaryId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> deleteComment(
+            @PathVariable Long diaryId,
+            @PathVariable Long commentId,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để xóa bình luận!", "UNAUTHORIZED")
+                );
+            }
+            diaryService.deleteComment(commentId, userId);
+            return ResponseEntity.ok(ApiResponse.success(null, "Xóa bình luận thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Xóa bình luận thất bại: " + e.getMessage(), "DELETE_COMMENT_FAILED")
+            );
+        }
+    }
+
 
     @GetMapping("/posted-spots")
     public ResponseEntity<ApiResponse<List<Long>>> getPostedSpotIds(

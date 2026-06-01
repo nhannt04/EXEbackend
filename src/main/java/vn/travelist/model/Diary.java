@@ -39,9 +39,17 @@ public class Diary {
     @Column(name = "spot_id")
     private Long spotId;
 
+    @Column(name = "itinerary_id")
+    private Long itineraryId;
+
     @Column(name = "likes_count")
     @Builder.Default
     private Integer likesCount = 0;
+
+    @Column(name = "dislikes_count")
+    @Builder.Default
+    private Integer dislikesCount = 0;
+
 
     @Column(name = "created_at")
     @Builder.Default
