@@ -10,11 +10,16 @@ import vn.travelist.dto.DiaryResponse;
 import vn.travelist.model.Comment;
 import vn.travelist.model.Diary;
 import vn.travelist.model.DiaryImage;
+import vn.travelist.model.DiaryReaction;
+import vn.travelist.model.DiaryReactionType;
 import vn.travelist.model.User;
 import vn.travelist.repository.CommentRepository;
 import vn.travelist.repository.DiaryRepository;
+import vn.travelist.repository.DiaryReactionRepository;
+import vn.travelist.repository.ItineraryRepository;
 import vn.travelist.repository.UserRepository;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,14 +30,17 @@ public class DiaryService {
 
     private final DiaryRepository diaryRepository;
     private final CommentRepository commentRepository;
+    private final DiaryReactionRepository diaryReactionRepository;
     private final UserRepository userRepository;
+    private final ItineraryRepository itineraryRepository;
+    private final SpotService spotService;
     private final CloudflareImageService cloudflareImageService;
 
     /**
      * Lấy toàn bộ nhật ký (có thể lọc theo chuyên mục) kèm tác giả và danh sách bình luận
      */
     @Transactional(readOnly = true)
-    public List<DiaryResponse> getAllDiaries(String category) {
+    public List<DiaryResponse> getAllDiaries(String category, Long currentUserId) {
         List<Diary> diaries;
         if (category == null || category.isEmpty() || "all".equalsIgnoreCase(category)) {
             diaries = diaryRepository.findAllByOrderByCreatedAtDesc();
@@ -40,8 +48,17 @@ public class DiaryService {
             diaries = diaryRepository.findByCategoryOrderByCreatedAtDesc(category);
         }
 
+        Map<Long, String> reactionByDiaryId = new HashMap<>();
+        if (currentUserId != null && !diaries.isEmpty()) {
+            List<Long> diaryIds = diaries.stream().map(Diary::getId).collect(Collectors.toList());
+            diaryReactionRepository.findByDiaryIdInAndUserId(diaryIds, currentUserId)
+                    .forEach(reaction -> reactionByDiaryId.put(
+                            reaction.getDiary().getId(),
+                            reaction.getReactionType() != null ? reaction.getReactionType().name() : null));
+        }
+
         return diaries.stream()
-                .map(this::convertToDiaryResponse)
+                .map(diary -> convertToDiaryResponse(diary, reactionByDiaryId.get(diary.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -49,9 +66,17 @@ public class DiaryService {
      * Tạo bài viết nhật ký du ký mới kèm tệp ảnh upload lên Cloudflare (Fallback cho Multipart)
      */
     @Transactional
-    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, MultipartFile imageFile) {
+    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, Long itineraryId, MultipartFile imageFile) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
+
+        // Kiểm tra ràng buộc: mỗi địa điểm trong một lịch trình chỉ được đăng 1 lần
+        if (spotId != null && itineraryId != null) {
+            boolean alreadyPosted = diaryRepository.existsByUserIdAndSpotIdAndItineraryId(userId, spotId, itineraryId);
+            if (alreadyPosted) {
+                throw new RuntimeException("Địa điểm này đã được đăng trong lịch trình này. Hãy hoàn thành một lịch trình khác để đăng lại!");
+            }
+        }
 
         String imageCfId = null;
         String imageUrl = null;
@@ -71,6 +96,8 @@ public class DiaryService {
                 .category(category)
                 .contentVi(contentVi)
                 .contentEn(contentEn)
+                .spotId(spotId)
+                .itineraryId(itineraryId)
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
@@ -84,7 +111,7 @@ public class DiaryService {
         diary.setImages(diaryImages);
 
         Diary savedDiary = diaryRepository.save(diary);
-        return convertToDiaryResponse(savedDiary);
+        return convertToDiaryResponse(savedDiary, null);
     }
 
     /**
@@ -95,11 +122,22 @@ public class DiaryService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
 
+        // Kiểm tra ràng buộc: mỗi địa điểm trong một lịch trình chỉ được đăng 1 lần
+        if (request.getSpotId() != null && request.getItineraryId() != null) {
+            boolean alreadyPosted = diaryRepository.existsByUserIdAndSpotIdAndItineraryId(
+                    request.getUserId(), request.getSpotId(), request.getItineraryId());
+            if (alreadyPosted) {
+                throw new RuntimeException("Địa điểm này đã được đăng trong lịch trình này. Hãy hoàn thành một lịch trình khác để đăng lại!");
+            }
+        }
+
         Diary diary = Diary.builder()
                 .user(user)
                 .category(request.getCategory())
                 .contentVi(request.getContentVi())
                 .contentEn(request.getContentEn())
+                .spotId(request.getSpotId())
+                .itineraryId(request.getItineraryId())
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
@@ -115,24 +153,78 @@ public class DiaryService {
         diary.setImages(diaryImages);
 
         Diary savedDiary = diaryRepository.save(diary);
-        return convertToDiaryResponse(savedDiary);
+        return convertToDiaryResponse(savedDiary, null);
+    }
+
+    /**
+     * Lấy danh sách spotId đã được đăng bởi user trong một itinerary cụ thể
+     */
+    @Transactional(readOnly = true)
+    public List<Long> getPostedSpotIds(Long userId, Long itineraryId) {
+        return diaryRepository.findByUserIdAndItineraryId(userId, itineraryId)
+                .stream()
+                .filter(d -> d.getSpotId() != null)
+                .map(Diary::getSpotId)
+                .collect(Collectors.toList());
     }
 
     /**
      * Tăng số lượng Thả tim cho bài viết (Like)
      */
     @Transactional
-    public void toggleLike(Long diaryId, Long userId) {
+    public void toggleLike(Long diaryId, Long userId, String type) {
         Diary diary = diaryRepository.findById(diaryId)
                 .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại!"));
-        
-        if (diary.getUser() != null && diary.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Bạn không được phép tự thích bài viết của chính mình!");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
+
+        DiaryReactionType requestedType = normalizeReactionType(type);
+        if (requestedType == null) {
+            throw new RuntimeException("Loại tương tác không hợp lệ!");
         }
-        
-        diary.setLikesCount(diary.getLikesCount() + 1);
+
+        DiaryReaction existingReaction = diaryReactionRepository.findByDiaryIdAndUserId(diaryId, userId)
+                .orElse(null);
+
+        int likes = diary.getLikesCount() != null ? diary.getLikesCount() : 0;
+        int dislikes = diary.getDislikesCount() != null ? diary.getDislikesCount() : 0;
+
+        if (requestedType == DiaryReactionType.LIKE) {
+            if (existingReaction == null) {
+                diaryReactionRepository.save(DiaryReaction.builder()
+                        .diary(diary)
+                        .user(user)
+                        .reactionType(DiaryReactionType.LIKE)
+                        .build());
+                likes++;
+            } else if (existingReaction.getReactionType() == DiaryReactionType.DISLIKE) {
+                existingReaction.setReactionType(DiaryReactionType.LIKE);
+                diaryReactionRepository.save(existingReaction);
+                dislikes = Math.max(0, dislikes - 1);
+                likes++;
+            }
+        } else if (requestedType == DiaryReactionType.DISLIKE) {
+            if (existingReaction == null) {
+                diaryReactionRepository.save(DiaryReaction.builder()
+                        .diary(diary)
+                        .user(user)
+                        .reactionType(DiaryReactionType.DISLIKE)
+                        .build());
+                dislikes++;
+            } else if (existingReaction.getReactionType() == DiaryReactionType.LIKE) {
+                existingReaction.setReactionType(DiaryReactionType.DISLIKE);
+                diaryReactionRepository.save(existingReaction);
+                likes = Math.max(0, likes - 1);
+                dislikes++;
+            }
+        }
+
+        diary.setLikesCount(likes);
+        diary.setDislikesCount(dislikes);
         diaryRepository.save(diary);
     }
+
+
 
     /**
      * Đăng bình luận cho bài viết nhật ký du lịch (hỗ trợ bình luận con lồng nhau)
@@ -173,10 +265,23 @@ public class DiaryService {
                 .build();
     }
 
+    @Transactional
+    public void deleteComment(Long commentId, Long userId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Bình luận không tồn tại!"));
+        
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền xóa bình luận của người khác!");
+        }
+        
+        commentRepository.delete(comment);
+    }
+
     /**
      * Converter nội bộ chuyển Diary sang DiaryResponse DTO
      */
-    private DiaryResponse convertToDiaryResponse(Diary diary) {
+
+    private DiaryResponse convertToDiaryResponse(Diary diary, String myReaction) {
         // Tải danh sách các bình luận của bài viết này
         List<Comment> comments = commentRepository.findByDiaryIdOrderByCreatedAtAsc(diary.getId());
         
@@ -205,7 +310,16 @@ public class DiaryService {
             legacyImageUrl = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80";
         }
 
-        return DiaryResponse.builder()
+        vn.travelist.model.Spot spot = null;
+        if (diary.getSpotId() != null) {
+            try {
+                spot = spotService.getSpotById(diary.getSpotId());
+            } catch (Exception e) {
+                // ignore if spot cannot be resolved
+            }
+        }
+
+        DiaryResponse.DiaryResponseBuilder builder = DiaryResponse.builder()
                 .id(diary.getId())
                 .category(diary.getCategory())
                 .contentVi(diary.getContentVi())
@@ -213,8 +327,12 @@ public class DiaryService {
                 .imageCfId(legacyImageCfId)
                 .imageUrl(legacyImageUrl)
                 .images(diary.getImages())
-                .likesCount(diary.getLikesCount())
+                .likesCount(diary.getLikesCount() != null ? diary.getLikesCount() : 0)
+                .dislikesCount(diary.getDislikesCount() != null ? diary.getDislikesCount() : 0)
+                .myReaction(myReaction)
+
                 .createdAt(diary.getCreatedAt())
+
                 .user(DiaryResponse.AuthorInfo.builder()
                         .id(diary.getUser().getId())
                         .fullName(diary.getUser().getFullName())
@@ -223,6 +341,22 @@ public class DiaryService {
                         .avatarUrl(diary.getUser().getAvatarUrl())
                         .build())
                 .comments(commentResponses)
-                .build();
+                .spotId(diary.getSpotId())
+                .spot(spot);
+
+        return builder.build();
+    }
+
+    private DiaryReactionType normalizeReactionType(String type) {
+        if (type == null) {
+            return null;
+        }
+        if ("LIKE".equalsIgnoreCase(type)) {
+            return DiaryReactionType.LIKE;
+        }
+        if ("DISLIKE".equalsIgnoreCase(type)) {
+            return DiaryReactionType.DISLIKE;
+        }
+        return null;
     }
 }

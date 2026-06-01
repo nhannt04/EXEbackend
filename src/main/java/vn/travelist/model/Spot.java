@@ -16,7 +16,9 @@ public class Spot {
     private String nameEn;
     private String category;
     private String tags;
+    private String address;
     private Double latitude;
+
     private Double longitude;
     private Integer minCost;
     private Integer maxCost;

@@ -73,34 +73,48 @@ public class TripService {
         for (int day = 1; day <= daysCount; day++) {
             List<TripResponse.ScheduledSpot> dailySlots = new ArrayList<>();
 
-            // ── A. Chọn pool spots tham quan chưa ghé (đủ sightseeingPerDay spots) ──
+            // 1. Chọn bữa ăn sáng (Breakfast)
+            Spot breakfastSpot = pickUnvisited(foodPool, visited, 1).stream().findFirst().orElse(
+                foodPool.isEmpty() ? null : foodPool.get(0)
+            );
+            if (breakfastSpot != null) visited.add(breakfastSpot.getId());
+
+            // 2. Chọn pool spots tham quan chưa ghé (đủ sightseeingPerDay spots)
             List<Spot> daySightseeing = pickUnvisited(sightseeingPool, visited, sightseeingPerDay);
             daySightseeing.forEach(s -> visited.add(s.getId()));
 
-            // ── B. Chọn 1 bữa ăn chưa ghé (food) ─────────────────────────────────
+            // 3. Chọn bữa trưa (Lunch)
             Spot lunchSpot = pickUnvisited(foodPool, visited, 1).stream().findFirst().orElse(
                 foodPool.isEmpty() ? null : foodPool.get(0)
             );
             if (lunchSpot != null) visited.add(lunchSpot.getId());
 
-            // ── C. Chọn 1 cafe chưa ghé (buổi chiều) ─────────────────────────────
-            Spot cafeSpot = pickUnvisited(cafePool, visited, 1).stream().findFirst().orElse(null);
+            // 4. Chọn cafe xế chiều (Afternoon tea/Cafe)
+            Spot cafeSpot = pickUnvisited(cafePool, visited, 1).stream().findFirst().orElse(
+                cafePool.isEmpty() ? null : cafePool.get(0)
+            );
             if (cafeSpot != null) visited.add(cafeSpot.getId());
 
-            // ── D. Tối ưu lộ trình tham quan theo Haversine Greedy ────────────────
+            // 5. Chọn bữa tối (Dinner)
+            Spot dinnerSpot = pickUnvisited(foodPool, visited, 1).stream().findFirst().orElse(
+                foodPool.isEmpty() ? null : foodPool.get(0)
+            );
+            if (dinnerSpot != null) visited.add(dinnerSpot.getId());
+
+            // Tối ưu lộ trình tham quan theo Haversine Greedy
             List<Spot> optimized = routeOptimizationService.optimizeRoute(daySightseeing, curLat, curLng);
 
-            // ── E. Phân bổ spots theo slot thời gian ─────────────────────────────
-            Spot morningSpot   = pickSlotSpot(optimized, 8,  0, 9,  30, "morning",   new HashSet<>());
-            Spot afternoonSpot = pickSlotSpot(optimized, 13, 0, 17, 0,  "afternoon", morningSpot != null ? Set.of(morningSpot.getId()) : Set.of());
-            Spot eveningSpot   = pickSlotSpot(optimized, 18, 0, 22, 0,  "evening",
+            // Phân bổ spots tham quan theo slot thời gian
+            Spot morningSpot   = pickSlotSpot(optimized, 8,  0, 11,  0, "morning",   new HashSet<>());
+            Spot afternoonSpot = pickSlotSpot(optimized, 13, 0, 14, 45,  "afternoon", morningSpot != null ? Set.of(morningSpot.getId()) : Set.of());
+            Spot eveningSpot   = pickSlotSpot(optimized, 19, 30, 21, 30,  "evening",
                 morningSpot != null && afternoonSpot != null
                     ? Set.of(morningSpot.getId(), afternoonSpot.getId())
                     : morningSpot != null ? Set.of(morningSpot.getId())
                     : afternoonSpot != null ? Set.of(afternoonSpot.getId())
                     : Set.of());
 
-            // ── F. Fallback: nếu slot nào còn trống thì lấy spot còn lại ─────────
+            // Fallback: nếu slot nào còn trống thì lấy spot còn lại
             List<Spot> unassigned = new ArrayList<>(optimized);
             if (morningSpot   != null) unassigned.remove(morningSpot);
             if (afternoonSpot != null) unassigned.remove(afternoonSpot);
@@ -110,53 +124,37 @@ public class TripService {
             if (afternoonSpot == null && !unassigned.isEmpty()) { afternoonSpot = unassigned.remove(0); }
             if (eveningSpot == null   && !unassigned.isEmpty()) { eveningSpot   = unassigned.remove(0); }
 
-            // ── G. Xây dựng timeline ngày ─────────────────────────────────────────
-            // 08:00 – Buổi sáng tham quan
+            // Xây dựng timeline ngày 8 slot đồng bộ hoàn toàn
+            if (breakfastSpot != null) {
+                dailySlots.add(buildSlot("BREAKFAST", "07:00 - 07:30 (Ăn sáng)", breakfastSpot));
+                totalActivityCost += getSpotCost(breakfastSpot);
+            }
             if (morningSpot != null) {
-                int dur = orDefault(morningSpot.getEstimatedDurationMinutes(), 90);
-                dailySlots.add(buildSlot("MORNING", timeRange(8, 0, dur, "Tham quan & Khám phá"), morningSpot));
+                dailySlots.add(buildSlot("MORNING", "08:00 - 11:00 (Tham quan sáng)", morningSpot));
                 totalActivityCost += getSpotCost(morningSpot);
             }
-
-            // 10:30 – Cafe sáng (nếu Healing/Romantic style)
-            if (("healing".equals(style) || "romantic".equals(style)) && cafeSpot != null) {
-                int dur = orDefault(cafeSpot.getEstimatedDurationMinutes(), 60);
-                dailySlots.add(buildSlot("CAFE_MORNING", timeRange(10, 30, dur, "Cà phê & Thư giãn"), cafeSpot));
-                totalActivityCost += getSpotCost(cafeSpot);
-                cafeSpot = null; // Đã dùng, không dùng lại buổi chiều
-            }
-
-            // 12:00 – Bữa trưa
             if (lunchSpot != null) {
-                int dur = orDefault(lunchSpot.getEstimatedDurationMinutes(), 60);
-                dailySlots.add(buildSlot("LUNCH", timeRange(12, 0, dur, "Ăn trưa & Nghỉ ngơi"), lunchSpot));
+                dailySlots.add(buildSlot("LUNCH", "11:30 - 12:30 (Ăn trưa)", lunchSpot));
                 totalActivityCost += getSpotCost(lunchSpot);
             }
-
-            // 14:30 – Buổi chiều tham quan
             if (afternoonSpot != null) {
-                int dur = orDefault(afternoonSpot.getEstimatedDurationMinutes(), 90);
-                dailySlots.add(buildSlot("AFTERNOON", timeRange(14, 30, dur, "Tham quan buổi chiều"), afternoonSpot));
+                dailySlots.add(buildSlot("AFTERNOON", "13:00 - 14:45 (Tham quan chiều)", afternoonSpot));
                 totalActivityCost += getSpotCost(afternoonSpot);
             }
-
-            // 17:00 – Cafe chiều (không phải Healing vì đã có cafe sáng)
             if (cafeSpot != null) {
-                int dur = orDefault(cafeSpot.getEstimatedDurationMinutes(), 60);
-                dailySlots.add(buildSlot("CAFE", timeRange(17, 0, dur, "Cà phê & Chill"), cafeSpot));
+                dailySlots.add(buildSlot("AFTERNOON_TEA", "15:00 - 15:30 (Ăn xế)", cafeSpot));
                 totalActivityCost += getSpotCost(cafeSpot);
             }
-
-            // 19:00 – Buổi tối tham quan / check-in đêm
+            if (dinnerSpot != null) {
+                dailySlots.add(buildSlot("DINNER", "18:30 - 19:00 (Ăn tối)", dinnerSpot));
+                totalActivityCost += getSpotCost(dinnerSpot);
+            }
             if (eveningSpot != null) {
-                int dur = orDefault(eveningSpot.getEstimatedDurationMinutes(), 60);
-                dailySlots.add(buildSlot("EVENING", timeRange(19, 0, dur, "Trải nghiệm buổi tối"), eveningSpot));
+                dailySlots.add(buildSlot("EVENING", "19:30 - 21:30 (Vui chơi tối)", eveningSpot));
                 totalActivityCost += getSpotCost(eveningSpot);
             }
-
-            // 21:30 – Chỗ nghỉ cuối ngày
             if (staySpot != null) {
-                dailySlots.add(buildSlot("STAY", "21:30 (Check-in nghỉ ngơi qua đêm)", staySpot));
+                dailySlots.add(buildSlot("STAY", "22:00 (Nghỉ ngơi)", staySpot));
             }
 
             daySchedules.add(TripResponse.DaySchedule.builder().day(day).spots(dailySlots).build());

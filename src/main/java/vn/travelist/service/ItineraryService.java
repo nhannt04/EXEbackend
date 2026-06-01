@@ -42,6 +42,12 @@ public class ItineraryService {
                 .collect(Collectors.toList());
     }
 
+    public List<ItineraryResponse> getCompletedItineraries(Long userId) {
+        return itineraryRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, "COMPLETED").stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     public void deleteItinerary(Long id, Long userId) {
         Itinerary itinerary = itineraryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lịch trình không tồn tại!"));
@@ -51,6 +57,19 @@ public class ItineraryService {
         }
 
         itineraryRepository.delete(itinerary);
+    }
+
+    public ItineraryResponse updateItineraryStatus(Long id, String status, Long userId) {
+        Itinerary itinerary = itineraryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lịch trình không tồn tại!"));
+
+        if (!itinerary.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền cập nhật lịch trình này!");
+        }
+
+        itinerary.setStatus(status);
+        Itinerary saved = itineraryRepository.save(itinerary);
+        return mapToResponse(saved);
     }
 
     private ItineraryResponse mapToResponse(Itinerary itinerary) {
@@ -63,6 +82,7 @@ public class ItineraryService {
                 .travelStyle(itinerary.getTravelStyle())
                 .groupType(itinerary.getGroupType())
                 .tripData(itinerary.getTripData())
+                .status(itinerary.getStatus())
                 .createdAt(itinerary.getCreatedAt())
                 .build();
     }

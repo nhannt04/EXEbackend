@@ -10,5 +10,6 @@ CREATE TABLE IF NOT EXISTS entertainments (
     longitude DOUBLE PRECISION,
     min_price INTEGER DEFAULT 0,
     max_price INTEGER DEFAULT 0,
-    image_url VARCHAR(500)
+    image_url VARCHAR(500),
+    overnight BOOLEAN NOT NULL DEFAULT FALSE
 );

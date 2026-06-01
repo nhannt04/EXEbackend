@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import vn.travelist.dto.ApiResponse;
 import vn.travelist.model.Cafe;
 import vn.travelist.repository.CafeRepository;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/cafes")
@@ -30,6 +32,29 @@ public class CafeController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(
                 ApiResponse.error("Lấy danh sách quán cà phê thất bại: " + e.getMessage(), "GET_CAFES_FAILED")
+            );
+        }
+    }
+
+    @GetMapping("/operating/now")
+    public ResponseEntity<ApiResponse<List<Cafe>>> getOperatingCafes() {
+        try {
+            LocalTime now = LocalTime.now();
+            List<Cafe> allCafes = cafeRepository.findAll();
+
+            List<Cafe> operatingCafes = allCafes.stream()
+                .filter(cafe -> {
+                    if (cafe.getOpeningTime() == null || cafe.getClosingTime() == null) {
+                        return false; // Skip if no hours set
+                    }
+                    return !now.isBefore(cafe.getOpeningTime()) && !now.isAfter(cafe.getClosingTime());
+                })
+                .collect(Collectors.toList());
+
+            return ResponseEntity.ok(ApiResponse.success(operatingCafes, "Lấy danh sách quán cà phê đang mở cửa thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Lấy danh sách quán cà phê đang mở cửa thất bại: " + e.getMessage(), "GET_OPERATING_CAFES_FAILED")
             );
         }
     }

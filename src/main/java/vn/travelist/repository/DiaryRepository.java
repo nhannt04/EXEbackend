@@ -16,4 +16,9 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     // Lọc nhật ký theo danh mục sắp xếp theo ngày đăng mới nhất với EntityGraph để tránh N+1 select
     @EntityGraph(attributePaths = {"images", "user"})
     List<Diary> findByCategoryOrderByCreatedAtDesc(String category);
+
+    boolean existsByUserIdAndSpotIdAndItineraryId(Long userId, Long spotId, Long itineraryId);
+
+    List<Diary> findByUserIdAndItineraryId(Long userId, Long itineraryId);
 }
+

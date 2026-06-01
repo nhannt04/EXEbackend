@@ -8,4 +8,7 @@ import java.util.List;
 @Repository
 public interface ItineraryRepository extends JpaRepository<Itinerary, Long> {
     List<Itinerary> findByUserIdOrderByCreatedAtDesc(Long userId);
+
+    List<Itinerary> findByUserIdAndStatusOrderByCreatedAtDesc(Long userId, String status);
 }
+

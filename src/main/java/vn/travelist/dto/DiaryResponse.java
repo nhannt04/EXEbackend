@@ -20,9 +20,14 @@ public class DiaryResponse {
     private String imageCfId;
     private java.util.List<vn.travelist.model.DiaryImage> images;
     private Integer likesCount;
+    private Integer dislikesCount;
+    private String myReaction;
     private LocalDateTime createdAt;
+
     private AuthorInfo user;
     private List<CommentResponse> comments;
+    private Long spotId;
+    private vn.travelist.model.Spot spot;
 
     @Data
     @NoArgsConstructor
