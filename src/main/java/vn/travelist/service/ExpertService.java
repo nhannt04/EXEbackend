@@ -27,6 +27,7 @@ public class ExpertService {
      * Lấy danh sách các chuyên gia đang online hỗ trợ
      */
     @Transactional(readOnly = true)
+    @org.springframework.cache.annotation.Cacheable(value = "experts", key = "'online'")
     public List<ExpertResponse> getOnlineExperts() {
         return expertRepository.findByIsOnlineTrue().stream()
                 .map(this::convertToExpertResponse)
@@ -37,6 +38,7 @@ public class ExpertService {
      * Lấy danh sách toàn bộ chuyên gia bản địa
      */
     @Transactional(readOnly = true)
+    @org.springframework.cache.annotation.Cacheable(value = "experts", key = "'all'")
     public List<ExpertResponse> getAllExperts() {
         return expertRepository.findAll().stream()
                 .map(this::convertToExpertResponse)
