@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
             User admin = User.builder()
                     .email("admin@travelist.vn")
                     .passwordHash("73l8gRjwLftklgfdXT+MdiMEjJwGPVMsyVxe16iYpk8=")
-                    .fullName("Trần Admin")
+                    .fullName("Admin Management")
                     .role("ADMIN")
                     .enabled(true)
                     .build();
@@ -50,8 +50,8 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(admin);
             log.info("[DataInitializer] Đã nạp thành công 2 tài khoản mẫu (traveler@travelist.vn, admin@travelist.vn).");
 
-            // Đăng ký Trần Admin làm Chuyên gia bản địa
-            log.info("[DataInitializer] Đăng ký Trần Admin làm Chuyên gia Bản Địa...");
+            // Đăng ký Admin Management làm Chuyên gia bản địa
+            log.info("[DataInitializer] Đăng ký Admin Management làm Chuyên gia Bản Địa...");
             Expert expert = Expert.builder()
                     .user(admin)
                     .expertise("Ẩm thực & Di sản văn hóa cổ kính Hội An")
@@ -90,7 +90,7 @@ public class DataInitializer implements CommandLineRunner {
             diary1.getImages().add(img1);
             diaryRepository.save(diary1);
 
-            // Tạo bài viết nhật ký mẫu của Trần Admin
+            // Tạo bài viết nhật ký mẫu của Admin Management
             Diary diary2 = Diary.builder()
                     .user(admin)
                     .category("food")
@@ -107,7 +107,7 @@ public class DataInitializer implements CommandLineRunner {
             diary2.getImages().add(img2);
             diaryRepository.save(diary2);
 
-            // Thêm bình luận mẫu từ Trần Admin vào bài viết Nguyễn Du Khách
+            // Thêm bình luận mẫu từ Admin Management vào bài viết Nguyễn Du Khách
             Comment comment = Comment.builder()
                     .diary(diary1)
                     .user(admin)
