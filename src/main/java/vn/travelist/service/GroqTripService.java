@@ -50,6 +50,7 @@ public class GroqTripService {
 
     private final String geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
+    @org.springframework.cache.annotation.Cacheable(value = "generatedItineraries", key = "#request.toString()")
     public TripResponse generateItinerary(TripRequest request) {
         if (geminiApiKey == null || geminiApiKey.isBlank()) {
             log.warn("[GroqTripService] GEMINI_API_KEY chưa được cấu hình. Chuyển sang rule-based fallback.");
