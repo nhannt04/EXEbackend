@@ -50,6 +50,9 @@ public class Diary {
     @Builder.Default
     private Integer dislikesCount = 0;
 
+    @Column(name = "status")
+    @Builder.Default
+    private String status = "public";
 
     @Column(name = "created_at")
     @Builder.Default

@@ -42,6 +42,12 @@ public class ItineraryService {
                 .collect(Collectors.toList());
     }
 
+    public List<ItineraryResponse> getCompletedItineraries(Long userId) {
+        return itineraryRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, "COMPLETED").stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     public void deleteItinerary(Long id, Long userId) {
         Itinerary itinerary = itineraryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lịch trình không tồn tại!"));

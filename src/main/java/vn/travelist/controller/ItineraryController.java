@@ -59,6 +59,26 @@ public class ItineraryController {
         }
     }
 
+    @GetMapping("/completed")
+    public ResponseEntity<ApiResponse<List<ItineraryResponse>>> getCompletedItineraries(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = getUserIdFromHeader(authHeader);
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để xem lịch trình đã hoàn thành!", "UNAUTHORIZED")
+                );
+            }
+
+            List<ItineraryResponse> list = itineraryService.getCompletedItineraries(userId);
+            return ResponseEntity.ok(ApiResponse.success(list, "Lấy danh sách lịch trình đã hoàn thành thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Lấy danh sách lịch trình đã hoàn thành thất bại: " + e.getMessage(), "GET_COMPLETED_ITINERARIES_FAILED")
+            );
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteItinerary(
             @PathVariable Long id,
