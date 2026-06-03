@@ -182,4 +182,32 @@ public class DiaryController {
             );
         }
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<DiaryResponse>> updateDiaryStatus(
+            @PathVariable Long id,
+            @RequestParam String status,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để cập nhật trạng thái bài viết!", "UNAUTHORIZED")
+                );
+            }
+
+            DiaryResponse response = diaryService.updateDiaryStatus(id, status, userId);
+            return ResponseEntity.ok(ApiResponse.success(response, "Cập nhật trạng thái bài viết thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Cập nhật trạng thái bài viết thất bại: " + e.getMessage(), "UPDATE_STATUS_FAILED")
+            );
+        }
+    }
 }

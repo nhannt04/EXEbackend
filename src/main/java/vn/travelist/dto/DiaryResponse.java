@@ -22,6 +22,7 @@ public class DiaryResponse {
     private Integer likesCount;
     private Integer dislikesCount;
     private String myReaction;
+    private String status;
     private LocalDateTime createdAt;
 
     private AuthorInfo user;

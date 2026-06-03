@@ -330,6 +330,7 @@ public class DiaryService {
                 .likesCount(diary.getLikesCount() != null ? diary.getLikesCount() : 0)
                 .dislikesCount(diary.getDislikesCount() != null ? diary.getDislikesCount() : 0)
                 .myReaction(myReaction)
+                .status(diary.getStatus())
 
                 .createdAt(diary.getCreatedAt())
 
@@ -345,6 +346,20 @@ public class DiaryService {
                 .spot(spot);
 
         return builder.build();
+    }
+
+    @Transactional
+    public DiaryResponse updateDiaryStatus(Long id, String status, Long userId) {
+        Diary diary = diaryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại!"));
+
+        if (!diary.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền cập nhật trạng thái bài viết này!");
+        }
+
+        diary.setStatus(status);
+        Diary saved = diaryRepository.save(diary);
+        return convertToDiaryResponse(saved, null);
     }
 
     private DiaryReactionType normalizeReactionType(String type) {
