@@ -122,6 +122,32 @@ public class ItineraryController {
         }
     }
 
+    @GetMapping("/{id}/handbook")
+    public ResponseEntity<ApiResponse<String>> getItineraryHandbook(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = getUserIdFromHeader(authHeader);
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để tạo cẩm nang!", "UNAUTHORIZED")
+                );
+            }
+
+            String handbookJson = itineraryService.generateHandbookForItinerary(id, userId);
+            if (handbookJson.startsWith("{\"error\"")) {
+                return ResponseEntity.badRequest().body(
+                    ApiResponse.error(handbookJson, "GENERATE_HANDBOOK_FAILED")
+                );
+            }
+            return ResponseEntity.ok(ApiResponse.success(handbookJson, "Tạo cẩm nang từ AI thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Tạo cẩm nang thất bại: " + e.getMessage(), "GENERATE_HANDBOOK_FAILED")
+            );
+        }
+    }
+
     private Long getUserIdFromHeader(String authHeader) {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
