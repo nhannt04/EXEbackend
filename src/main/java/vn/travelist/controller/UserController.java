@@ -8,6 +8,7 @@ import vn.travelist.dto.ApiResponse;
 import vn.travelist.dto.AuthResponse;
 import vn.travelist.model.User;
 import vn.travelist.repository.UserRepository;
+import vn.travelist.service.AuthService;
 import vn.travelist.service.CloudflareImageService;
 
 import java.util.Map;
@@ -19,6 +20,7 @@ public class UserController {
 
     private final UserRepository userRepository;
     private final CloudflareImageService cloudflareImageService;
+    private final AuthService authService;
 
     /**
      * Upload / cập nhật ảnh đại diện cho người dùng
@@ -97,5 +99,65 @@ public class UserController {
                 .build();
 
         return ResponseEntity.ok(ApiResponse.success(userInfo, "Cập nhật ảnh đại diện thành công!"));
+    }
+
+    /**
+     * Cập nhật thông tin hồ sơ người dùng
+     */
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<ApiResponse<AuthResponse.UserInfo>> updateProfile(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+
+        String fullName = payload.get("fullName");
+        if (fullName == null || fullName.trim().isEmpty()) {
+            throw new RuntimeException("Họ và Tên không được để trống!");
+        }
+
+        user.setFullName(fullName.trim());
+        userRepository.save(user);
+
+        AuthResponse.UserInfo userInfo = AuthResponse.UserInfo.builder()
+                .id(user.getId())
+                .fullName(user.getFullName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .avatarUrl(user.getAvatarUrl())
+                .build();
+
+        return ResponseEntity.ok(ApiResponse.success(userInfo, "Cập nhật thông tin thành công!"));
+    }
+
+    /**
+     * Đổi mật khẩu
+     */
+    @PutMapping("/{id}/password")
+    public ResponseEntity<ApiResponse<String>> changePassword(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
+
+        String oldPassword = payload.get("oldPassword");
+        String newPassword = payload.get("newPassword");
+
+        if (oldPassword == null || newPassword == null) {
+            throw new RuntimeException("Vui lòng nhập đầy đủ mật khẩu cũ và mới!");
+        }
+        if (newPassword.length() < 6) {
+            throw new RuntimeException("Mật khẩu mới phải có ít nhất 6 ký tự!");
+        }
+
+        String hashedOldPassword = authService.hashPassword(oldPassword);
+        if (!user.getPasswordHash().equals(hashedOldPassword)) {
+            throw new RuntimeException("Mật khẩu cũ không chính xác!");
+        }
+
+        user.setPasswordHash(authService.hashPassword(newPassword));
+        userRepository.save(user);
+
+        return ResponseEntity.ok(ApiResponse.success(null, "Đổi mật khẩu thành công!"));
     }
 }
