@@ -50,9 +50,9 @@ public class DiaryController {
             @RequestParam(required = false) Long itineraryId,
             @RequestParam String contentVi,
             @RequestParam String contentEn,
-            @RequestParam(value = "image", required = false) MultipartFile image) {
+            @RequestParam(value = "images", required = false) java.util.List<MultipartFile> images) {
         try {
-            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, spotId, itineraryId, image);
+            DiaryResponse response = diaryService.createDiary(userId, category, contentVi, contentEn, spotId, itineraryId, images);
             return ResponseEntity.ok(ApiResponse.success(response, "Đăng tải bài viết nhật ký du ký thành công!"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(

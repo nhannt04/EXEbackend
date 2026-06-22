@@ -66,7 +66,7 @@ public class DiaryService {
      * Tạo bài viết nhật ký du ký mới kèm tệp ảnh upload lên Cloudflare (Fallback cho Multipart)
      */
     @Transactional
-    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, Long itineraryId, MultipartFile imageFile) {
+    public DiaryResponse createDiary(Long userId, String category, String contentVi, String contentEn, Long spotId, Long itineraryId, java.util.List<MultipartFile> imageFiles) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại!"));
 
@@ -76,19 +76,6 @@ public class DiaryService {
             if (alreadyPosted) {
                 throw new RuntimeException("Địa điểm này đã được đăng trong lịch trình này. Hãy hoàn thành một lịch trình khác để đăng lại!");
             }
-        }
-
-        String imageCfId = null;
-        String imageUrl = null;
-
-        // Tiến hành upload ảnh lên Cloudflare nếu người dùng chọn gửi tệp ảnh đính kèm
-        if (imageFile != null && !imageFile.isEmpty()) {
-            Map<String, String> uploadResult = cloudflareImageService.uploadImage(imageFile);
-            imageCfId = uploadResult.get("cfId");
-            imageUrl = uploadResult.get("url");
-        } else {
-            // Ảnh Hội An phong cảnh mặc định nếu không chọn ảnh
-            imageUrl = "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80";
         }
 
         Diary diary = Diary.builder()
@@ -101,13 +88,31 @@ public class DiaryService {
                 .build();
 
         List<DiaryImage> diaryImages = new ArrayList<>();
-        if (imageUrl != null) {
+        
+        // Tiến hành upload ảnh lên Cloudflare nếu người dùng chọn gửi tệp ảnh đính kèm
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            List<DiaryImage> uploadedImages = imageFiles.parallelStream()
+                    .filter(file -> !file.isEmpty())
+                    .map(file -> {
+                        Map<String, String> uploadResult = cloudflareImageService.uploadImage(file);
+                        return DiaryImage.builder()
+                                .diary(diary)
+                                .imageCfId(uploadResult.get("cfId"))
+                                .imageUrl(uploadResult.get("url"))
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+            diaryImages.addAll(uploadedImages);
+        }
+        
+        if (diaryImages.isEmpty()) {
+            // Ảnh Hội An phong cảnh mặc định nếu không chọn ảnh
             diaryImages.add(DiaryImage.builder()
                     .diary(diary)
-                    .imageCfId(imageCfId)
-                    .imageUrl(imageUrl)
+                    .imageUrl("https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80")
                     .build());
         }
+
         diary.setImages(diaryImages);
 
         Diary savedDiary = diaryRepository.save(diary);

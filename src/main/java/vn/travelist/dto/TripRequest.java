@@ -13,10 +13,15 @@ import java.util.List;
 public class TripRequest {
     private Integer days;
     private Integer budget;
-    private String style;            // 'cultural', 'food', 'healing', 'adventure'
     private Integer people;          // Số lượng người đi cùng
     private String groupType;        // 'couple', 'family', 'solo', 'friends'
     private List<String> interests;  // Danh sách tags sở thích
+    
+    // New fields replacing style
+    private List<String> selectedDishes;
+    private List<String> selectedStayCategories;
+    private List<String> selectedEntCategories;
+
     private Double currentLat;       // Vĩ độ điểm khởi hành
     private Double currentLng;       // Kinh độ điểm khởi hành
 }

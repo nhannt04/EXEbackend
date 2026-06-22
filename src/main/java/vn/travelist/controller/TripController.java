@@ -7,7 +7,11 @@ import org.springframework.web.bind.annotation.*;
 import vn.travelist.dto.ApiResponse;
 import vn.travelist.dto.TripRequest;
 import vn.travelist.dto.TripResponse;
+import vn.travelist.dto.TripMetadataResponse;
 import vn.travelist.service.GroqTripService;
+import vn.travelist.repository.DishRepository;
+import vn.travelist.repository.StayRepository;
+import vn.travelist.repository.EntertainmentRepository;
 import java.util.Map;
 
 @RestController
@@ -16,6 +20,9 @@ import java.util.Map;
 public class TripController {
 
     private final GroqTripService groqTripService;
+    private final DishRepository dishRepository;
+    private final StayRepository stayRepository;
+    private final EntertainmentRepository entertainmentRepository;
 
     @Value("${groq.api-key:}")
     private String groqApiKey;
@@ -43,6 +50,22 @@ public class TripController {
                 : "Groq API key chưa được cấu hình. Đang dùng rule-based scoring."
         );
         return ResponseEntity.ok(ApiResponse.success(status, "Kiểm tra trạng thái AI thành công!"));
+    }
+
+    @GetMapping("/metadata")
+    public ResponseEntity<ApiResponse<TripMetadataResponse>> getTripMetadata() {
+        try {
+            TripMetadataResponse metadata = TripMetadataResponse.builder()
+                .dishes(dishRepository.findDistinctDishNames())
+                .stayTypes(stayRepository.findDistinctStayTypes())
+                .entertainmentTypes(entertainmentRepository.findDistinctEntertainmentTypes())
+                .build();
+            return ResponseEntity.ok(ApiResponse.success(metadata, "Lấy metadata lên lịch trình thành công"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Không thể lấy metadata: " + e.getMessage(), "METADATA_FETCH_FAILED")
+            );
+        }
     }
 
     @PostMapping("/generate")

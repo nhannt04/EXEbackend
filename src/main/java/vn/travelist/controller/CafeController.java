@@ -59,6 +59,18 @@ public class CafeController {
         }
     }
 
+    @GetMapping("/styles")
+    public ResponseEntity<ApiResponse<List<String>>> getStyles() {
+        try {
+            List<String> styles = cafeRepository.findDistinctStyles();
+            return ResponseEntity.ok(ApiResponse.success(styles, "Lấy danh sách phong cách thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                ApiResponse.error("Lấy danh sách phong cách thất bại: " + e.getMessage(), "GET_STYLES_FAILED")
+            );
+        }
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Cafe>> getCafeById(@PathVariable Long id) {
         try {

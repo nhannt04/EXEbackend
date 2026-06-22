@@ -263,7 +263,9 @@ public class GroqTripService {
             List<Spot> optimizedSpots = new ArrayList<>();
             try {
                 final String interestsStr = request.getInterests() != null ? String.join(" ", request.getInterests()).toLowerCase() : "";
-                final String styleStr = request.getStyle() != null ? request.getStyle().toLowerCase() : "";
+                final String dishesStr = request.getSelectedDishes() != null ? String.join(" ", request.getSelectedDishes()).toLowerCase() : "";
+                final String staysStr = request.getSelectedStayCategories() != null ? String.join(" ", request.getSelectedStayCategories()).toLowerCase() : "";
+                final String entsStr = request.getSelectedEntCategories() != null ? String.join(" ", request.getSelectedEntCategories()).toLowerCase() : "";
 
                 // Bộ tính điểm mức độ phù hợp sở thích & phong cách
                 java.util.function.Function<Spot, Double> getScore = (s) -> {
@@ -286,10 +288,11 @@ public class GroqTripService {
                         }
                     }
 
-                    // Khớp phong cách chuyến đi
-                    if (!styleStr.isEmpty()) {
-                        String[] styleWords = styleStr.split("[,\\s]+");
-                        for (String sw : styleWords) {
+                    // Khớp lựa chọn từ tickboxes
+                    String combinedSelections = dishesStr + " " + staysStr + " " + entsStr;
+                    if (!combinedSelections.trim().isEmpty()) {
+                        String[] selectionWords = combinedSelections.split("[,\\s]+");
+                        for (String sw : selectionWords) {
                             if (sw.length() > 2) {
                                 if (tags.contains(sw) || desc.contains(sw) || name.contains(sw)) {
                                     score += 8.0;
@@ -349,8 +352,8 @@ public class GroqTripService {
 
             // 1. Build prompt
             String prompt = buildPrompt(request, optimizedSpots);
-            log.info("[GroqTripService] Gửi yêu cầu Gemini AI cho lịch trình {} ngày, phong cách: {}",
-                request.getDays(), request.getStyle());
+            log.info("[GroqTripService] Gửi yêu cầu Gemini AI cho lịch trình {} ngày",
+                request.getDays());
 
             // 2. Gọi Gemini API
             String jsonResponse = callGeminiApi(prompt);
@@ -408,7 +411,12 @@ public class GroqTripService {
         int days    = request.getDays()    != null ? request.getDays()    : 2;
         int people  = request.getPeople()  != null ? request.getPeople()  : 2;
         int budget  = request.getBudget()  != null ? request.getBudget()  : 5000000;
-        String style     = request.getStyle()     != null ? request.getStyle()     : "Khám phá";
+        String dishes = request.getSelectedDishes() != null && !request.getSelectedDishes().isEmpty()
+            ? String.join(", ", request.getSelectedDishes()) : "Không yêu cầu cụ thể";
+        String stays = request.getSelectedStayCategories() != null && !request.getSelectedStayCategories().isEmpty()
+            ? String.join(", ", request.getSelectedStayCategories()) : "Không yêu cầu cụ thể";
+        String ents = request.getSelectedEntCategories() != null && !request.getSelectedEntCategories().isEmpty()
+            ? String.join(", ", request.getSelectedEntCategories()) : "Không yêu cầu cụ thể";
         String groupType = request.getGroupType() != null ? request.getGroupType() : "couple";
         String interests = request.getInterests() != null
             ? String.join(", ", request.getInterests()) : "tham quan, ẩm thực";
@@ -435,8 +443,10 @@ public class GroqTripService {
             THÔNG TIN CHUYẾN ĐI:
             - Số ngày: %d ngày
             - Ngân sách tổng: %,d VND cho %d người
-            - Phong cách: %s (Một trong ba: Chill & Thư giãn, Sống ảo, Trải nghiệm)
-            - Sở thích cá nhân (Ăn gì, uống gì, đi đâu): %s
+            - Món ăn muốn thử: %s
+            - Loại hình lưu trú: %s
+            - Loại hình vui chơi: %s
+            - Sở thích cá nhân: %s
             - Loại nhóm: %s
  
             DANH SÁCH ĐỊA ĐIỂM TẠI HỘI AN (JSON):
@@ -459,7 +469,7 @@ public class GroqTripService {
  
             NGUYÊN TẮC QUAN TRỌNG:
             1. Chỉ dùng spot_id từ danh sách đã cung cấp, KHÔNG tự bịa spot mới.
-            2. Ưu tiên spots phù hợp nhất với sở thích tự do "%s" và phong cách "%s" của người dùng. Hãy hoạt động như một công cụ tìm kiếm thông minh kết hợp cơ sở dữ liệu cung cấp và kiến thức internet của bạn để lựa chọn địa điểm hoàn hảo khớp với mô tả của người dùng.
+            2. Ưu tiên spots phù hợp nhất với món ăn "%s", chỗ ở "%s", khu vui chơi "%s" và sở thích tự do "%s" của người dùng. Hãy hoạt động như một công cụ tìm kiếm thông minh kết hợp cơ sở dữ liệu cung cấp và kiến thức internet của bạn để lựa chọn địa điểm hoàn hảo khớp với mô tả của người dùng.
             3. KHÔNG lặp lại cùng 1 spot trong nhiều ngày (ngoại trừ STAY).
             4. Slot STAY dùng chung 1 khách sạn/homestay xuyên suốt (cùng spot_id có category="stay").
             5. Slot BREAKFAST: chọn spot có category="food" phù hợp ăn sáng hoặc các món đặc sản ăn sáng (bánh mỳ, mì quảng...).
@@ -473,10 +483,10 @@ public class GroqTripService {
             13. KHÔNG bao giờ xếp spot vào slot nếu nó đã đóng cửa hoặc không phù hợp khung giờ thực tế.
             14. Mốc giờ hiện tại của hệ thống là %s (Asia/Ho_Chi_Minh). Hãy sinh lịch trình theo logic giờ mở cửa thực tế, không bịa giờ.
             """,
-            days, budget, people, style, interests, groupType,
+            days, budget, people, dishes, stays, ents, interests, groupType,
             spotsJson,
             days, slotFormat,
-            interests, style,
+            dishes, stays, ents, interests,
             budget,
             nowText
         );

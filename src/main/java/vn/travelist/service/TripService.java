@@ -27,7 +27,7 @@ public class TripService {
 
         int daysCount  = (request.getDays()   != null && request.getDays()   > 0) ? request.getDays()   : 1;
         int people     = (request.getPeople() != null && request.getPeople() > 0) ? request.getPeople() : 1;
-        String style   = request.getStyle() != null ? request.getStyle().toLowerCase() : "";
+        String style   = "";
 
         // ── Điểm khởi hành tối ưu lộ trình ──────────────────────────────────────
         // Trung tâm phố cổ Hội An (tọa độ chuẩn)
