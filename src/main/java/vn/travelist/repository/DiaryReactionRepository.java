@@ -13,5 +13,5 @@ public interface DiaryReactionRepository extends JpaRepository<DiaryReaction, Lo
     Optional<DiaryReaction> findByDiaryIdAndUserId(Long diaryId, Long userId);
 
     List<DiaryReaction> findByDiaryIdInAndUserId(Collection<Long> diaryIds, Long userId);
+    void deleteByDiaryId(Long diaryId);
 }
-

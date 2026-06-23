@@ -271,6 +271,20 @@ public class DiaryService {
     }
 
     @Transactional
+    public void deleteDiary(Long diaryId, Long userId) {
+        Diary diary = diaryRepository.findById(diaryId)
+                .orElseThrow(() -> new RuntimeException("Bài viết không tồn tại!"));
+        
+        if (!diary.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền xóa bài viết này!");
+        }
+        
+        commentRepository.deleteByDiaryId(diaryId);
+        diaryReactionRepository.deleteByDiaryId(diaryId);
+        diaryRepository.delete(diary);
+    }
+
+    @Transactional
     public void deleteComment(Long commentId, Long userId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Bình luận không tồn tại!"));

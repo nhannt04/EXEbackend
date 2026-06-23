@@ -129,6 +129,32 @@ public class DiaryController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteDiary(
+            @PathVariable Long id,
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        try {
+            Long userId = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                if (jwtTokenProvider.validateToken(token)) {
+                    userId = jwtTokenProvider.getUserIdFromJWT(token);
+                }
+            }
+            if (userId == null) {
+                return ResponseEntity.status(401).body(
+                    ApiResponse.error("Bạn cần đăng nhập để xóa bài viết!", "UNAUTHORIZED")
+                );
+            }
+            diaryService.deleteDiary(id, userId);
+            return ResponseEntity.ok(ApiResponse.success(null, "Xóa bài viết thành công!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("Xóa bài viết thất bại: " + e.getMessage(), "DELETE_DIARY_FAILED")
+            );
+        }
+    }
+
     @DeleteMapping("/{diaryId}/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable Long diaryId,
